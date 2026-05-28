@@ -1,4 +1,4 @@
-package io.libra.customer.entities.enums;
+package io.libra.customer.domain.enums;
 
 // Résultat du suitability test MIFID II — influence ce que validation autorise comme trades.
 public enum RiskProfile {

@@ -1,4 +1,4 @@
-package io.libra.customer.entities.enums;
+package io.libra.customer.domain.enums;
 
 public enum CustomerStatus {
     PENDING_KYC,   // créé, en attente de vérification documentaire

@@ -1,9 +1,9 @@
 package io.libra.customer.persistence.entity;
 
-import io.libra.customer.entities.enums.ClientCategory;
-import io.libra.customer.entities.enums.CustomerStatus;
-import io.libra.customer.entities.enums.KycLevel;
-import io.libra.customer.entities.enums.RiskProfile;
+import io.libra.customer.domain.enums.ClientCategory;
+import io.libra.customer.domain.enums.CustomerStatus;
+import io.libra.customer.domain.enums.KycLevel;
+import io.libra.customer.domain.enums.RiskProfile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

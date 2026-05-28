@@ -1,4 +1,4 @@
-package io.libra.customer.entities.enums;
+package io.libra.customer.domain.enums;
 
 // Niveaux de KYC inspirés MIFID II / FINMA (simplifiés pour la démo).
 public enum KycLevel {

@@ -1,6 +1,6 @@
 package io.libra.customer.events;
 
-import io.libra.customer.entities.enums.KycLevel;
+import io.libra.customer.domain.enums.KycLevel;
 
 import java.time.Instant;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package io.libra.customer.events;
 
-import io.libra.customer.entities.Customer;
+import io.libra.customer.domain.Customer;
 
 import java.time.Instant;
 

@@ -1,6 +1,6 @@
 package io.libra.customer.events;
 
-import io.libra.customer.entities.enums.CustomerStatus;
+import io.libra.customer.domain.enums.CustomerStatus;
 
 import java.time.Instant;
 import java.util.UUID;

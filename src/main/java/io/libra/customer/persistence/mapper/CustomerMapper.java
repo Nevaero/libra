@@ -1,6 +1,6 @@
 package io.libra.customer.persistence.mapper;
 
-import io.libra.customer.entities.Customer;
+import io.libra.customer.domain.Customer;
 import io.libra.customer.persistence.entity.CustomerEntity;
 import org.mapstruct.Mapper;
 

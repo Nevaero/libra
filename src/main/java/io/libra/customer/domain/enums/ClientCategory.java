@@ -1,4 +1,4 @@
-package io.libra.customer.entities.enums;
+package io.libra.customer.domain.enums;
 
 // Catégorisation MIFID II. Détermine le niveau de protection réglementaire applicable.
 public enum ClientCategory {

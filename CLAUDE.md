@@ -61,9 +61,9 @@ io.libra
 ├── ledger      ✅             # double-entry, T+2 booking/settlement, BalanceProjector
 ├── pricing     ✅             # market data : QuoteService (upsert optimiste), adapters FIX/OANDA,
 │                              #   bootstrap config-driven (YAML), port read getLatestQuote
+├── customer    ✅             # CustomerService : onboarding + lifecycle réglementaire + events
 ├── trading                    # stubs (entities/events/persistence)
-├── validation                 # stubs (rules)
-├── customer    ⏭️             # PROCHAIN — stubs (entities/events) en place
+├── validation  ⏭️             # PROCHAIN — règles pré-trade (consomme customer/pricing/ledger), scaffoldé
 ├── settlement                 # stubs
 └── api                        # REST + WebSocket (non créé)
 ```
@@ -76,8 +76,8 @@ Chaque module : `package-info.java` avec `@ApplicationModule` (+ `allowedDepende
 1. ✅ **Ledger** — implémenté + testé (`docs/LEDGER_HANDOFF.md`)
 2. ✅ **Reference** (Security Master) — implémenté + testé
 3. ✅ **Pricing** — implémenté + testé (`docs/PRICING_HANDOFF.md`) ; reste le transport réel (mock-feed, cf. handoff §6.1)
-4. ⏭️ **Customer** — prochain
-5. Validation
+4. ✅ **Customer** — implémenté + testé (`docs/CUSTOMER_HANDOFF.md`)
+5. ⏭️ **Validation** — prochain (point de convergence : consomme customer + pricing + ledger)
 6. Trading
 7. Settlement
 
@@ -94,7 +94,10 @@ Schéma Flyway en place (`V1__schema.sql` + `V2__latest_quotes_last_trade.sql`),
 **Pricing** (`io.libra.pricing`) — **implémenté + testé** :
 - `QuoteService` (ingest → upsert optimiste conditionnel sur `sequence`, publie `QuoteAdvanced` si advance), adapters `client.impl.{Fix,Oanda}PriceProviderClient` (un par source, conversion format brut → `PriceTick`), bootstrap `PricingSubscriptionBootstrap` (YAML `pricing-subscriptions.yml` → résolution via reference), port `PricingService` (`getLatestQuote`). Last trade equity supporté (COALESCE).
 
-**Stubs (scaffolding, pas de logique)** : `trading`, `validation`, `customer` (entities + events + persistence/repos générés), `settlement`.
+**Customer** (`io.libra.customer`) — **implémenté + testé** :
+- `CustomerService` (port unique) : `onboard` (→ PENDING_KYC), state machine réglementaire (`activate` gated sur KYC, `suspend`/`reactivate`, `close`), `updateKycLevel`/`updateRiskProfile`, events via outbox. Domaine = records, persistence ACL.
+
+**Stubs (scaffolding, pas de logique)** : `trading`, `validation` (rules scaffoldées), `settlement`.
 
 **Ce qui reste globalement** : module `api` (REST/WebSocket) non créé ; ArchUnit ; métriques Micrometer custom ; ADRs (`docs/adr/`) ; le transport pricing réel (mock-feed Bun, cf. `docs/PRICING_HANDOFF.md` §6.1) ; modules customer→settlement.
 
