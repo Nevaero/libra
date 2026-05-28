@@ -1,4 +1,4 @@
-@NamedInterface("api")
+@NamedInterface("commands")
 package io.libra.ledger.commands.vo;
 
 import org.springframework.modulith.NamedInterface;

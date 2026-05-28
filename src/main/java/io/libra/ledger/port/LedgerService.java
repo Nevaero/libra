@@ -14,7 +14,7 @@ import java.util.UUID;
 // Module port for the ledger. Single surface visible from other Modulith modules
 // (trading, settlement, customer, api...). Internal collaborators (BalanceProjector,
 // AccountManagementService.findMirrorAccount, etc.) are intentionally NOT exposed.
-// Exposure is declared at the package level (ledger.port :: api), not per type.
+// Exposure is declared at the package level: this package is the ledger `port` named interface.
 public interface LedgerService {
 
     // Account aggregate ----------------------------------------------------

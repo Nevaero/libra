@@ -8,7 +8,7 @@
 >
 > - **Order unifié** : un seul record `Order` discriminé par `OrderType {MARKET, LIMIT}` + `limitPriceMinorUnits` nullable — **pas** la hiérarchie sealed `MarketOrder | LimitOrder` décrite plus bas.
 > - **Mono-leg** : `ParentOrder` existe mais n'est **pas** utilisé ; `submitOrder` crée un seul `Order` standalone. Le multi-leg (split cross-currency) est repoussé en phase 2.
-> - **Settlement synchrone** : trading **appelle** `settlement.scheduleSettlement(tradeId, bookingEntryId, tradeDate, assetClass)` dans sa TX — il ne **publie pas** un event que settlement consomme. Donc pas de `ParentOrderSettled`/dépendance inversée. `allowedDependencies = {core, util, ledger :: api, pricing :: api, validation :: api, settlement :: api}`.
+> - **Settlement synchrone** : trading **appelle** `settlement.scheduleSettlement(tradeId, bookingEntryId, tradeDate, assetClass)` dans sa TX ; il ne **publie pas** un event que settlement consomme. Donc pas de `ParentOrderSettled` ni de dépendance inversée. `allowedDependencies` en interfaces fines : `core`, `util`, `ledger :: port`/`domain`/`commands`, `pricing :: port`/`domain`, `validation :: port`/`domain`, `settlement :: port`/`domain`.
 > - **Booking DvP** : le booking se fait via `TradeBooker` interne (deux legs équilibrés base + quote sur comptes pending), s'appuyant sur `LedgerService.resolve{Client,Counterparty}Account`. Phase BOOKING ; le batch settlement fait la phase 2.
 > - **États terminaux** : `EXECUTED` / `REJECTED` (validation) / `CANCELLED` (no-fill). `SETTLED` n'est pas posé par trading en phase 1 (viendra du batch).
 > - **Exécution** : `ExecutionSimulator` in-memory (fill au quote courant ; LIMIT marketable sinon no-fill). Pas de fills partiels.

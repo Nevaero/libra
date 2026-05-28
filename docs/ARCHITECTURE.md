@@ -143,9 +143,10 @@ declares, so the compile-time arrow points up the layering on purpose
 ### Declared module dependencies
 
 Boundaries are enforced at build time by `ModularityTests` (`ApplicationModules.verify()`). Each
-closed module publishes an `api` named interface over its `port`, `domain`, and `commands`
-packages; consumers reference `module :: api` (see
-[ADR-0002](./adr/0002-named-interface-boundaries.md)).
+closed module publishes fine-grained named interfaces per role: `port` (the service interfaces),
+`domain` (aggregates, value objects, enums), and `commands` where relevant. A consumer declares
+only the interfaces it actually uses, for example `ledger :: port` plus `ledger :: domain` but not
+`ledger :: commands` (see [ADR-0002](./adr/0002-named-interface-boundaries.md)).
 
 | Module | Type | `allowedDependencies` |
 |---|---|---|
@@ -153,11 +154,11 @@ packages; consumers reference `module :: api` (see
 | `util` | OPEN | none |
 | `reference` | closed | `core`, `util` |
 | `ledger` | closed | `core`, `util` |
-| `pricing` | closed | `core`, `util`, `reference :: api` |
+| `pricing` | closed | `core`, `util`, `reference :: port` |
 | `customer` | closed | `core`, `util` |
-| `validation` | closed | `core`, `ledger :: api`, `pricing :: api`, `customer :: api` |
-| `settlement` | closed | `core`, `util`, `ledger :: api` |
-| `trading` | closed | `core`, `util`, `ledger :: api`, `pricing :: api`, `validation :: api`, `settlement :: api` |
+| `validation` | closed | `core`, `ledger :: port`, `ledger :: domain`, `pricing :: port`, `pricing :: domain`, `customer :: port`, `customer :: domain` |
+| `settlement` | closed | `core`, `util`, `ledger :: port` |
+| `trading` | closed | `core`, `util`, `ledger :: port`, `ledger :: domain`, `ledger :: commands`, `pricing :: port`, `pricing :: domain`, `validation :: port`, `validation :: domain`, `settlement :: port`, `settlement :: domain` |
 
 ### The command path (one synchronous transaction)
 

@@ -1,5 +1,5 @@
 // Validation's published surface (the pre-trade gate + its request/result types).
-@NamedInterface("api")
+@NamedInterface("port")
 package io.libra.validation.port;
 
 import org.springframework.modulith.NamedInterface;

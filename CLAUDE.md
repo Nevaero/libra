@@ -67,11 +67,11 @@ io.libra
 │                              #   (REQUIRES_NEW par instruction), BusinessDayCalculator. → {core, ledger}
 ├── trading     ✅             # orchestrateur ordres (phase 1) : submitOrder → idempotence → validation
 │                              #   → exécution simulée → booking DvP → scheduleSettlement. → {core, util,
-│                              #   ledger, pricing, validation, settlement} (tous en `:: api`)
+│                              #   ledger, pricing, validation, settlement} (en `:: port`/`domain`/`commands` selon besoin)
 └── api                        # REST + WebSocket (non créé)
 ```
 
-Chaque module : `package-info.java` avec `@ApplicationModule` (+ `allowedDependencies`), sous-packages `port`/`events`/`internal`. `core` est OPEN, `util` OPEN. Chaque module fermé **publie une named interface `@NamedInterface("api")`** couvrant ses packages `port`/`domain`/`commands` ; les consommateurs déclarent `"module :: api"`. `persistence`/`repository`/`internal`/`port.impl` restent encapsulés. `reference` reste fermé (`{"core","util"}`) — l'impl du SPI est injectée via l'interface core (**Dependency Inversion**). Le tout est **vérifié par `ModularityTests` (`ApplicationModules.verify()`)** : pas de cycle, dépendances déclarées respectées, accès uniquement aux types exposés.
+Chaque module : `package-info.java` avec `@ApplicationModule` (+ `allowedDependencies`), sous-packages `port`/`events`/`internal`. `core` est OPEN, `util` OPEN. Chaque module fermé **publie des named interfaces fines** (`@NamedInterface` au niveau package) par rôle : `port`, `domain`, `commands` ; un consommateur déclare précisément les interfaces qu'il utilise (ex. `ledger :: port` + `ledger :: domain`, jamais `ledger :: commands`). `persistence`/`repository`/`internal`/`port.impl` restent encapsulés. `reference` reste fermé (`{"core","util"}`), l'impl du SPI est injectée via l'interface core (**Dependency Inversion**). Le tout est **vérifié par `ModularityTests` (`ApplicationModules.verify()`)** : pas de cycle, dépendances déclarées respectées, accès uniquement aux types exposés.
 
 **Décision structurante** : le référentiel instruments a été extrait de `core` vers **`reference`** (un nouveau module). `core` ne porte que des **types**, jamais de logique/état. La résolution `(type, code, mic) → Asset` est un **SPI déclaré dans core, implémenté dans reference** (batch, élimine le N+1). Voir `docs/PRICING_HANDOFF.md` et les commits `reference`.
 
@@ -154,7 +154,7 @@ Quand un module est conçu, produire un nouveau `docs/<MODULE>_HANDOFF.md` sur l
 
 ## 9. Livrables attendus par module (Definition of Done type)
 
-Pour chaque module : entités + invariants validés, schéma Flyway idempotent, port `Service` exposé via la named interface `:: api` du module (package-level `@NamedInterface("api")`), events publiés via outbox, tests unitaires + property-based + intégration Testcontainers + vérification Modulith (`ModularityTests`), métriques Micrometer, ADRs versionnées sous `docs/adr/`, README de module avec exemple déroulé.
+Pour chaque module : entités + invariants validés, schéma Flyway idempotent, port `Service` exposé via les named interfaces fines du module (`port`/`domain`/`commands`, package-level `@NamedInterface`), events publiés via outbox, tests unitaires + property-based + intégration Testcontainers + vérification Modulith (`ModularityTests`), métriques Micrometer, ADRs versionnées sous `docs/adr/`, README de module avec exemple déroulé.
 
 ## 10. Commandes utiles
 
