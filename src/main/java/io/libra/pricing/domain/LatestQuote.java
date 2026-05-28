@@ -1,12 +1,16 @@
-package io.libra.pricing.entities;
+package io.libra.pricing.domain;
 
-import io.libra.pricing.entities.enums.Tenor;
+import io.libra.pricing.domain.enums.Tenor;
 
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
 // Latest quote per (instrument, tenor). Persistence handled by LatestQuoteEntity + LatestQuoteMapper.
+//
+// Two identities coexist : `id` is a surrogate UUIDv7 primary key (uniform with every other
+// table, stable across re-pricings), while (instrumentId, tenor) is the *business* key — the
+// tuple callers look a quote up by, and the UNIQUE constraint enforced in the schema.
 public record LatestQuote(
         UUID id,
         UUID instrumentId,
@@ -19,7 +23,11 @@ public record LatestQuote(
         Instant quoteTime,
         Instant receivedAt,
         UUID providerId,
-        long sequence
+        long sequence,
+        // Last traded price + size. Nullable : populated for equities, NULL for FX (quote-driven,
+        // no central tape). Carried separately from bid/ask because a tick is fundamentally a quote.
+        Long lastPriceMinorUnits,
+        Long lastSize
 ) {
 
     public LatestQuote {

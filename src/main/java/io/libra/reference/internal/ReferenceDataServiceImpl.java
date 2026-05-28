@@ -219,4 +219,17 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
                 .forEach(e -> active.add(currencyPairMapper.toDomain(e)));
         return active;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Security> findSecurityByIsinAndMic(String isin, String mic) {
+        return securityRepository.findByIsinAndMic(isin, mic).map(securityMapper::toDomain);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<CurrencyPair> findPairByCodes(String baseCode, String quoteCode) {
+        return currencyPairRepository.findByBaseCurrencyCodeAndQuoteCurrencyCode(baseCode, quoteCode)
+                .map(currencyPairMapper::toDomain);
+    }
 }

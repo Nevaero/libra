@@ -28,7 +28,7 @@ Le projet est conduit en **mode tutorat architectural** avec Romain (utilisateur
 
 ### Numérotation des questions
 
-Continuer le compteur `Question N :` à travers les sessions. **Dernière question posée : Question 37** (sur le module Ledger). La prochaine est donc **Question 38**, sur le module Pricing.
+Le compteur `Question N :` sert au **tutorat conception**. Les sessions ledger / reference / pricing ont basculé en **implémentation collaborative** sur demande explicite de Romain (« fais l'implém », « implémente X »), donc la numérotation est en pause. La reprendre (à partir de ~Q38) si on revient en conception pure.
 
 ## 3. Stack technique réelle (état actuel du repo)
 
@@ -40,64 +40,63 @@ Continuer le compteur `Question N :` à travers les sessions. **Dernière questi
 | Java | 21 LTS | **Java 25** (toolchain) | Suivre Java 25 |
 | Spring Boot | 3.4.x | **4.0.6** | Suivre 4.0.6 |
 | Spring Modulith | 1.3.x | **2.0.6** | Suivre 2.0.6 |
-| Lombok dans domaine | "Pas de Lombok" | **Records partout** (Security/Account/JournalEntry/Posting convertis) | Aligné sur la décision originelle. Pas de réintroduction de `@Data` dans le domaine. |
+| Postgres | 16 | **18.4** (compose + Testcontainers) | Flyway 12.6.2 (override : Boot manage 11.x qui ne reconnaît pas PG18) + `flyway-database-postgresql` |
+| Lombok dans domaine | "Pas de Lombok" | **Records partout** (domaine = records ; persistence = POJO `@Data @Entity`) | Anti-Corruption Layer. Pas de `@Data` dans le domaine. |
 
-Stack confirmée et stable : PostgreSQL 16 + JPA + Flyway, Spring Kafka, Spring Modulith outbox (JPA + Kafka externalization), Actuator + Micrometer + Prometheus, springdoc-openapi, Spring Security, WebMVC + WebSocket. Tests : JUnit 5, Testcontainers (Kafka conf déjà en place dans `TestcontainersConfiguration`). À ajouter quand nécessaire : AssertJ, jqwik (property-based), ArchUnit.
+Stack confirmée : PostgreSQL 18.4 + JPA + Flyway 12.6.2, Spring Kafka, Spring Modulith outbox (JPA + Kafka externalization, table `event_publication` matérialisée en Flyway car Modulith 2.x ne la crée plus), Actuator + Micrometer + Prometheus, springdoc-openapi, Spring Security, WebMVC + WebSocket. Tests : JUnit 5 (**Platform 6.0**), **AssertJ + jqwik** (property-based, déjà utilisés), Testcontainers (Postgres 18.4 + Kafka dans `TestcontainersConfiguration`). À ajouter : ArchUnit.
 
-`compose.yaml` est vide pour l'instant (`services: { }`) — pas de Postgres/Kafka en local encore configuré.
+`compose.yaml` est **configuré** : `postgres:18.4` (host port **5433** pour éviter un conflit local) + `apache/kafka:4.3.0` (KRaft, single-node). `application.properties` pointe sur 5433.
 
-## 4. Architecture cible : 6 modules Spring Modulith
+## 4. Architecture : modules Spring Modulith
 
 ```
 io.libra
 ├── LibraApplication
-├── core                       # VO partagés (Money, Asset, Currency, Security)
-├── ledger      ← conçu, stubs en cours
-├── trading
-├── pricing     ← PROCHAIN module à concevoir
-├── validation
-├── customer
-├── settlement
+├── core                       # OPEN. Types partagés purs (Money, Asset, Currency, Security,
+│                              #   CurrencyPair, Instrument) + SPI de résolution (AssetResolver,
+│                              #   AssetRef, ReferenceResolution) + MoneyEntity/MoneyMapper. ZÉRO logique.
+├── reference   ✅             # Security Master : persistance + cycle de vie des instruments
+│                              #   (securities, currency_pairs, currencies), impl du SPI de résolution
+│                              #   (batch IN-clause), events InstrumentListed/StatusChanged. Fermé, → core.
+├── ledger      ✅             # double-entry, T+2 booking/settlement, BalanceProjector
+├── pricing     ✅             # market data : QuoteService (upsert optimiste), adapters FIX/OANDA,
+│                              #   bootstrap config-driven (YAML), port read getLatestQuote
+├── trading                    # stubs (entities/events/persistence)
+├── validation                 # stubs (rules)
+├── customer    ⏭️             # PROCHAIN — stubs (entities/events) en place
+├── settlement                 # stubs
 └── api                        # REST + WebSocket (non créé)
 ```
 
-Chaque module : `package-info.java` avec `@ApplicationModule`, sous-packages `api` (ports exposés), `events` (events publiés), `internal` (impl hidden). Le module `core` est en `Type.OPEN` (partagé).
+Chaque module : `package-info.java` avec `@ApplicationModule` (+ `allowedDependencies`), sous-packages `port`/`events`/`internal`. `core` et `reference` exposent leurs types ; `reference` est fermé (`allowedDependencies={"core"}`) — personne n'importe ses internals, l'impl du SPI est injectée via l'interface core (**Dependency Inversion**).
 
-**Ordre d'implémentation prévu** :
-1. ✅ Ledger — handoff écrit (`docs/LEDGER_HANDOFF.md`), entités stubbées
-2. ⏭️ **Pricing** — à concevoir en tutorat maintenant
-3. Customer
-4. Validation
-5. Trading
-6. Settlement
+**Décision structurante** : le référentiel instruments a été extrait de `core` vers **`reference`** (un nouveau module). `core` ne porte que des **types**, jamais de logique/état. La résolution `(type, code, mic) → Asset` est un **SPI déclaré dans core, implémenté dans reference** (batch, élimine le N+1). Voir `docs/PRICING_HANDOFF.md` et les commits `reference`.
+
+**Ordre d'implémentation** :
+1. ✅ **Ledger** — implémenté + testé (`docs/LEDGER_HANDOFF.md`)
+2. ✅ **Reference** (Security Master) — implémenté + testé
+3. ✅ **Pricing** — implémenté + testé (`docs/PRICING_HANDOFF.md`) ; reste le transport réel (mock-feed, cf. handoff §6.1)
+4. ⏭️ **Customer** — prochain
+5. Validation
+6. Trading
+7. Settlement
 
 ## 5. État actuel du code
 
-**Ce qui existe** (mais stubbé, sans logique métier ni invariants) :
+Schéma Flyway en place (`V1__schema.sql` + `V2__latest_quotes_last_trade.sql`), tout compile et **~42 tests passent** (unitaires + jqwik + intégration Testcontainers).
 
-- `io.libra.LibraApplication` — entrypoint Spring Boot
-- `io.libra.core.entities` : `Asset` (sealed), `Currency` (record), `Security` (record, implémente `Asset` et `Instrument`), `Instrument` (sealed, permits `Security`/`CurrencyPair`), `CurrencyPair` (record), `Money` (record, `of/plus/minus/toDecimal` implémentés avec `Math.addExact` et `RoundingMode.UNNECESSARY`)
-- `io.libra.core.entities.enums` : `SecurityType`, `SecurityStatus`, `CurrencyPairStatus`, `InstrumentStatus` (sealed, permits `SecurityStatus`/`CurrencyPairStatus`)
-- `io.libra.ledger.domain` : `Account`, `Balance`, `JournalEntry`, `Posting` — **records, validations minimales** (formule available=book−pendingDebits+pendingCredits sur `Balance`, defensive `List.copyOf` sur `JournalEntry.postings`)
-- `io.libra.ledger.domain.enums` : `PostingType`, `AccountStatus`, `AccountType`, `EntryStatus`, `EntryType`
-- `package-info.java` pour `core` (OPEN) et `ledger` (allowedDependencies = {"core"})
-- `TestcontainersConfiguration` (Kafka container), `LibraApplicationTests` (contextLoads vide)
+**Ledger** (`io.libra.ledger`) — **implémenté + testé** :
+- domaine (records + invariant double-entry validé au compact constructor de `JournalEntry`), persistence `@Entity` + mappers MapStruct, repos, services par aggregate (`AccountManagementService`, `PostingService`, `ReadingService`, `MaintenanceService`), façade `LedgerService` (port), `BalanceProjector` interne (projection Balance dans la même TX, locking pessimiste), events via outbox, cycle T+2 booking→settlement. Test signature jqwik sur l'invariant.
 
-**Ce qui n'existe PAS encore** (mais est documenté dans `docs/LEDGER_HANDOFF.md` comme cible) :
+**Reference / Security Master** (`io.libra.reference`) — **implémenté + testé** :
+- entities/repos/mappers des instruments (securities, currency_pairs, currencies) **déplacés depuis core**, `ReferenceDataServiceImpl` (registration + state-machine lifecycle suspend/halt/delist), `ReferenceResolutionImpl` (impl du SPI `core.persistence.resolution`, résolution batch IN-clause), lookups par identité métier (`findSecurityByIsinAndMic`, `findPairByCodes`).
 
-- Aucun schéma Flyway (`src/main/resources/db/migration/` n'existe pas)
-- Aucune entité JPA mappée (les classes ne portent pas `@Entity`)
-- Aucun repository / service / port
-- Aucun event publié (`JournalEntryPosted`, `AccountOpened`, etc.)
-- Aucun test métier (juste `contextLoads`)
-- Aucun ADR (`docs/adr/` n'existe pas)
-- Aucune métrique Micrometer custom
-- Job de réconciliation, endpoint admin rebuild balance : non créés
-- `compose.yaml` vide → pas de Postgres/Kafka local
+**Pricing** (`io.libra.pricing`) — **implémenté + testé** :
+- `QuoteService` (ingest → upsert optimiste conditionnel sur `sequence`, publie `QuoteAdvanced` si advance), adapters `client.impl.{Fix,Oanda}PriceProviderClient` (un par source, conversion format brut → `PriceTick`), bootstrap `PricingSubscriptionBootstrap` (YAML `pricing-subscriptions.yml` → résolution via reference), port `PricingService` (`getLatestQuote`). Last trade equity supporté (COALESCE).
 
-**Petits défauts à signaler à Romain en passant** (ne pas corriger silencieusement) :
+**Stubs (scaffolding, pas de logique)** : `trading`, `validation`, `customer` (entities + events + persistence/repos générés), `settlement`.
 
-- *(rien à signaler actuellement — la divergence Lombok et la typo `journalEntreyId` ont été résolues)*
+**Ce qui reste globalement** : module `api` (REST/WebSocket) non créé ; ArchUnit ; métriques Micrometer custom ; ADRs (`docs/adr/`) ; le transport pricing réel (mock-feed Bun, cf. `docs/PRICING_HANDOFF.md` §6.1) ; modules customer→settlement.
 
 ## 6. Conventions transversales (à appliquer dans tout code écrit)
 
@@ -150,8 +149,8 @@ Pour chaque module : entités + invariants validés, schéma Flyway idempotent, 
 
 ## 11. Reprise de session — checklist Claude
 
-1. Lire `docs/CLAUDE_HANDOFF.md` et `docs/LEDGER_HANDOFF.md` si on n'est pas sûr du contexte.
-2. Demander à Romain par quoi il veut commencer (par défaut : conception du module **Pricing**, Question 38).
-3. Reprendre le **ping-pong court**, pas de réponses massives.
-4. Numéroter les questions à partir de la dernière posée.
-5. Ne JAMAIS implémenter spontanément sans demande explicite — c'est un projet d'apprentissage tutoré.
+1. Lire `docs/CLAUDE_HANDOFF.md`, `docs/LEDGER_HANDOFF.md`, `docs/PRICING_HANDOFF.md` si on n'est pas sûr du contexte.
+2. Demander à Romain par quoi il veut commencer (par défaut : module **Customer**, prochain dans l'ordre).
+3. Vérifier si on est en **conception (tutorat ping-pong)** ou en **implémentation collaborative** — Romain bascule explicitement.
+4. En tutorat : ping-pong court, une question à la fois, nommer les concepts. En implémentation : garder la suite verte, committer par tâche.
+5. Ne pas implémenter spontanément en mode tutorat — mais Romain demande souvent « fais l'implém » sur les modules récents.

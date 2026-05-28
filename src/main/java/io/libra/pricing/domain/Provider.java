@@ -1,4 +1,4 @@
-package io.libra.pricing.entities;
+package io.libra.pricing.domain;
 
 import java.util.Objects;
 import java.util.UUID;

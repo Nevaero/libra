@@ -1,0 +1,24 @@
+# Feed subscriptions, loaded at startup by PricingSubscriptionBootstrap.
+# Instruments are identified by business identity (ISIN+MIC for securities, base/quote for FX)
+# and resolved to an instrumentId via the Security Master — never by UUID (env-dependent).
+# Only seeded instruments are referenced here so the app boots clean.
+libra:
+  pricing:
+    providers:
+      - code: ACME_FIX
+        name: "Acme Bank (FIX 4.4)"
+        type: FIX
+        subscriptions:
+          # Nestlé on SIX Swiss Exchange.
+          - isin: CH0038863350
+            mic: XSWX
+            symbol: "NESN"
+            tenor: SPOT
+      - code: OANDA_DEMO
+        name: "OANDA v20 (demo)"
+        type: OANDA
+        subscriptions:
+          - base: EUR
+            quote: CHF
+            symbol: "EUR_CHF"
+            tenor: SPOT

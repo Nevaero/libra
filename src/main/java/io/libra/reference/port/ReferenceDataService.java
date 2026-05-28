@@ -51,4 +51,13 @@ public interface ReferenceDataService {
     Optional<CurrencyPair> findCurrencyPair(UUID id);
 
     List<Instrument> listActiveInstruments();
+
+    // --- Lookup by business identity (for config-driven resolution) -----------------
+
+    // Resolve a security listing by ISIN (ISO 6166) + MIC (ISO 10383) — the standard,
+    // environment-stable identity used in subscription config.
+    Optional<Security> findSecurityByIsinAndMic(String isin, String mic);
+
+    // Resolve an FX pair by its base/quote ISO 4217 codes (e.g. EUR/USD).
+    Optional<CurrencyPair> findPairByCodes(String baseCode, String quoteCode);
 }

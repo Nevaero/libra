@@ -1,6 +1,6 @@
 package io.libra.pricing.persistence.entity;
 
-import io.libra.pricing.entities.enums.Tenor;
+import io.libra.pricing.domain.enums.Tenor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -62,4 +62,11 @@ public class LatestQuoteEntity {
 
     @Column(nullable = false)
     private long sequence;
+
+    // Last trade — nullable (equities only ; FX leaves these NULL).
+    @Column(name = "last_price_minor_units")
+    private Long lastPriceMinorUnits;
+
+    @Column(name = "last_size")
+    private Long lastSize;
 }
