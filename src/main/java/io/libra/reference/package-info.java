@@ -4,7 +4,7 @@
 // never on this module's internals.
 @ApplicationModule(
         displayName = "Reference Data",
-        allowedDependencies = {"core"}
+        allowedDependencies = {"core", "util"}
 )
 package io.libra.reference;
 

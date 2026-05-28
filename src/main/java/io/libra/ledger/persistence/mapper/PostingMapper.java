@@ -15,8 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Mapper(componentModel = "spring")
 public abstract class PostingMapper {
 
-    @Autowired
     protected MoneyMapper moneyMapper;
+
+    @Autowired
+    protected void setMoneyMapper(MoneyMapper moneyMapper) {
+        this.moneyMapper = moneyMapper;
+    }
 
     @Mapping(target = "amount", source = "amount", qualifiedByName = "moneyToDomain")
     @Mapping(target = "balanceAfter", source = "balanceAfter", qualifiedByName = "moneyToDomain")

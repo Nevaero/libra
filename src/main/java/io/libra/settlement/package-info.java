@@ -3,7 +3,7 @@
 // (postSettlementEntry at T+2) and core. Dependencies point downward, no cycle.
 @ApplicationModule(
         displayName = "Settlement",
-        allowedDependencies = {"core", "ledger"}
+        allowedDependencies = {"core", "util", "ledger :: api"}
 )
 package io.libra.settlement;
 

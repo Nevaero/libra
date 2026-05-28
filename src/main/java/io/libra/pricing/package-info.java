@@ -1,7 +1,7 @@
 // pricing/package-info.java
 @ApplicationModule(
         displayName = "Pricing",
-        allowedDependencies = {"core", "util", "reference"}
+        allowedDependencies = {"core", "util", "reference :: api"}
 )
 package io.libra.pricing;
 

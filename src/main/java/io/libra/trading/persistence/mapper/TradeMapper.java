@@ -15,8 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Mapper(componentModel = "spring")
 public abstract class TradeMapper {
 
-    @Autowired
     protected MoneyMapper moneyMapper;
+
+    @Autowired
+    protected void setMoneyMapper(MoneyMapper moneyMapper) {
+        this.moneyMapper = moneyMapper;
+    }
 
     @Mapping(target = "executedQuantity", source = "executedQuantity", qualifiedByName = "moneyToDomain")
     public abstract Trade toDomain(TradeEntity entity, @Context AssetResolver resolver);

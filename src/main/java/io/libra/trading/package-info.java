@@ -3,7 +3,10 @@
 // (T+2 scheduling). Dependencies point strictly downward — nothing depends on trading.
 @ApplicationModule(
         displayName = "Trading",
-        allowedDependencies = {"core", "ledger", "pricing", "validation", "settlement", "ledger :: port"}
+        allowedDependencies = {
+                "core", "util",
+                "ledger :: api", "pricing :: api", "validation :: api", "settlement :: api"
+        }
 )
 package io.libra.trading;
 

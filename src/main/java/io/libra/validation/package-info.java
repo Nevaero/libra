@@ -1,6 +1,6 @@
 @ApplicationModule(
         displayName = "Validation",
-        allowedDependencies = {"core", "ledger", "pricing", "customer"}
+        allowedDependencies = {"core", "ledger :: api", "pricing :: api", "customer :: api"}
 )
 package io.libra.validation;
 

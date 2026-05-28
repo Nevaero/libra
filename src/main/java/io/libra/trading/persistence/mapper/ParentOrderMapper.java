@@ -17,8 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Mapper(componentModel = "spring")
 public abstract class ParentOrderMapper {
 
-    @Autowired
     protected MoneyMapper moneyMapper;
+
+    @Autowired
+    protected void setMoneyMapper(MoneyMapper moneyMapper) {
+        this.moneyMapper = moneyMapper;
+    }
 
     @Mapping(target = "sourceAsset", expression = "java(assetResolver.resolve(new io.libra.core.persistence.resolution.AssetRef(entity.getSourceAssetType(), entity.getSourceAssetCode(), entity.getSourceAssetMic())))")
     @Mapping(target = "targetQuantity", source = "targetQuantity", qualifiedByName = "moneyToDomain")

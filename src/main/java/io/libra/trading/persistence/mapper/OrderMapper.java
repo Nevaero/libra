@@ -20,8 +20,12 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 public abstract class OrderMapper {
 
-    @Autowired
     protected MoneyMapper moneyMapper;
+
+    @Autowired
+    protected void setMoneyMapper(MoneyMapper moneyMapper) {
+        this.moneyMapper = moneyMapper;
+    }
 
     @Mapping(target = "instrument", expression = "java(instrumentResolver.resolve(new io.libra.core.persistence.resolution.InstrumentRef(entity.getInstrumentType(), entity.getInstrumentId())))")
     @Mapping(target = "quantity", source = "quantity", qualifiedByName = "moneyToDomain")
