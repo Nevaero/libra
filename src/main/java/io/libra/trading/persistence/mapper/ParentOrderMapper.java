@@ -3,27 +3,26 @@ package io.libra.trading.persistence.mapper;
 import io.libra.core.entities.Asset;
 import io.libra.core.entities.Money;
 import io.libra.core.persistence.entity.MoneyEntity;
-import io.libra.core.persistence.mapper.AssetMapper;
 import io.libra.core.persistence.mapper.MoneyMapper;
+import io.libra.core.persistence.resolution.AssetRefs;
+import io.libra.core.persistence.resolution.AssetResolver;
 import io.libra.trading.entities.ParentOrder;
 import io.libra.trading.persistence.entity.ParentOrderEntity;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(componentModel = "spring", uses = {AssetMapper.class, MoneyMapper.class})
+@Mapper(componentModel = "spring")
 public abstract class ParentOrderMapper {
-
-    @Autowired
-    protected AssetMapper assetMapper;
 
     @Autowired
     protected MoneyMapper moneyMapper;
 
-    @Mapping(target = "sourceAsset", expression = "java(assetMapper.toDomain(entity.getSourceAssetType(), entity.getSourceAssetCode(), entity.getSourceAssetMic()))")
+    @Mapping(target = "sourceAsset", expression = "java(assetResolver.resolve(new io.libra.core.persistence.resolution.AssetRef(entity.getSourceAssetType(), entity.getSourceAssetCode(), entity.getSourceAssetMic())))")
     @Mapping(target = "targetQuantity", source = "targetQuantity", qualifiedByName = "moneyToDomain")
-    public abstract ParentOrder toDomain(ParentOrderEntity entity);
+    public abstract ParentOrder toDomain(ParentOrderEntity entity, @Context AssetResolver assetResolver);
 
     @Mapping(target = "sourceAssetType", source = "sourceAsset", qualifiedByName = "assetType")
     @Mapping(target = "sourceAssetCode", source = "sourceAsset", qualifiedByName = "assetCode")
@@ -33,22 +32,22 @@ public abstract class ParentOrderMapper {
 
     @Named("assetType")
     protected String assetType(Asset asset) {
-        return assetMapper.typeOf(asset);
+        return AssetRefs.typeOf(asset);
     }
 
     @Named("assetCode")
     protected String assetCode(Asset asset) {
-        return assetMapper.codeOf(asset);
+        return AssetRefs.codeOf(asset);
     }
 
     @Named("assetMic")
     protected String assetMic(Asset asset) {
-        return assetMapper.micOf(asset);
+        return AssetRefs.micOf(asset);
     }
 
     @Named("moneyToDomain")
-    protected Money moneyToDomain(MoneyEntity entity) {
-        return moneyMapper.toDomain(entity);
+    protected Money moneyToDomain(MoneyEntity entity, @Context AssetResolver resolver) {
+        return moneyMapper.toDomain(entity, resolver);
     }
 
     @Named("moneyToEntity")

@@ -1,7 +1,7 @@
-package io.libra.core.persistence.mapper;
+package io.libra.reference.persistence.mapper;
 
 import io.libra.core.entities.Currency;
-import io.libra.core.persistence.entity.CurrencyEntity;
+import io.libra.reference.persistence.entity.CurrencyEntity;
 import org.mapstruct.Mapper;
 import org.springframework.cache.annotation.Cacheable;
 

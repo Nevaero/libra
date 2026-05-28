@@ -1,12 +1,15 @@
 package io.libra.ledger.service.impl;
 
 import io.libra.core.entities.Money;
+import io.libra.core.persistence.resolution.AssetResolver;
+import io.libra.core.persistence.resolution.ReferenceResolution;
 import io.libra.ledger.commands.OpenAccountCommand;
 import io.libra.ledger.domain.Account;
 import io.libra.ledger.domain.Balance;
 import io.libra.ledger.domain.enums.account.AccountStatus;
 import io.libra.ledger.events.AccountOpened;
 import io.libra.ledger.events.AccountStatusChanged;
+import io.libra.ledger.persistence.LedgerRefs;
 import io.libra.ledger.persistence.entity.AccountEntity;
 import io.libra.ledger.persistence.mapper.AccountMapper;
 import io.libra.ledger.persistence.mapper.BalanceMapper;
@@ -39,19 +42,27 @@ public class AccountManagementServiceImpl implements AccountManagementService {
 
     private final BalanceMapper balanceMapper;
 
+    private final ReferenceResolution referenceResolution;
+
     private final ApplicationEventPublisher events;
 
     @Override
     public Optional<Account> findAccountById(UUID id) {
-        return accountRepository.findById(id).map(accountMapper::toDomain);
+        return accountRepository.findById(id).map(this::toDomain);
     }
 
     @Override
     public List<Account> findAccountsByOwnerId(UUID ownerId) {
-        return accountRepository.findAccountsByOwnerId(ownerId)
-                .stream()
-                .map(accountMapper::toDomain)
-                .toList();
+        List<AccountEntity> entities = accountRepository.findAccountsByOwnerId(ownerId);
+        AssetResolver resolver = referenceResolution.assetResolverFor(
+                entities.stream().map(LedgerRefs::of).toList());
+        return entities.stream().map(e -> accountMapper.toDomain(e, resolver)).toList();
+    }
+
+    // Single-account rehydration : one batch resolution of the (single) asset it holds.
+    private Account toDomain(AccountEntity entity) {
+        AssetResolver resolver = referenceResolution.assetResolverFor(List.of(LedgerRefs.of(entity)));
+        return accountMapper.toDomain(entity, resolver);
     }
 
     @Override
@@ -119,7 +130,7 @@ public class AccountManagementServiceImpl implements AccountManagementService {
                         source.getAssetMic(),
                         source.getType(),
                         !source.isPending()
-                ).map(accountMapper::toDomain));
+                ).map(this::toDomain));
     }
 
     @Override

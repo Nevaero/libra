@@ -1,4 +1,4 @@
-package io.libra.core.persistence.entity;
+package io.libra.reference.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

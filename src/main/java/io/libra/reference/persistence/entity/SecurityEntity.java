@@ -1,4 +1,4 @@
-package io.libra.core.persistence.entity;
+package io.libra.reference.persistence.entity;
 
 import io.libra.core.entities.enums.SecurityStatus;
 import io.libra.core.entities.enums.SecurityType;

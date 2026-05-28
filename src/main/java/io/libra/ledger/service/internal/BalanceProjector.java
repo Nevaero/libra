@@ -2,11 +2,14 @@ package io.libra.ledger.service.internal;
 
 import io.libra.core.entities.Asset;
 import io.libra.core.entities.Money;
+import io.libra.core.persistence.resolution.AssetResolver;
+import io.libra.core.persistence.resolution.ReferenceResolution;
 import io.libra.ledger.domain.Balance;
 import io.libra.ledger.domain.JournalEntry;
 import io.libra.ledger.domain.Posting;
 import io.libra.ledger.domain.enums.PostingType;
 import io.libra.ledger.domain.enums.entry.EntryPhase;
+import io.libra.ledger.persistence.LedgerRefs;
 import io.libra.ledger.persistence.entity.BalanceEntity;
 import io.libra.ledger.persistence.mapper.BalanceMapper;
 import io.libra.ledger.repository.BalanceRepository;
@@ -40,6 +43,8 @@ public class BalanceProjector {
 
     private final BalanceMapper balanceMapper;
 
+    private final ReferenceResolution referenceResolution;
+
     // Acquires pessimistic locks on every Balance row whose accountId is in the input set.
     // Sorts ids before locking to enforce a global deterministic lock order across
     // concurrent transactions, preventing deadlocks.
@@ -63,8 +68,10 @@ public class BalanceProjector {
                             + " — Balance must be initialised at openAccount time");
         }
 
+        AssetResolver resolver = referenceResolution.assetResolverFor(
+                locked.stream().map(LedgerRefs::of).toList());
         return locked.stream()
-                .map(balanceMapper::toDomain)
+                .map(entity -> balanceMapper.toDomain(entity, resolver))
                 .collect(Collectors.toMap(
                         Balance::accountId,
                         Function.identity(),

@@ -1,4 +1,4 @@
-package io.libra.pricing.events.instrument;
+package io.libra.reference.events;
 
 import io.libra.core.entities.enums.InstrumentStatus;
 

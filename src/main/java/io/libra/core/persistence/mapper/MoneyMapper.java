@@ -3,34 +3,27 @@ package io.libra.core.persistence.mapper;
 import io.libra.core.entities.Asset;
 import io.libra.core.entities.Money;
 import io.libra.core.persistence.entity.MoneyEntity;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.libra.core.persistence.resolution.AssetRef;
+import io.libra.core.persistence.resolution.AssetRefs;
+import io.libra.core.persistence.resolution.AssetResolver;
 import org.springframework.stereotype.Component;
 
-// Plain Spring component (not a MapStruct interface) — Money mapping requires repository
-// lookups via AssetMapper to rehydrate the Asset reference held by the domain record.
-// Mappers that embed a Money reference reference this bean via `uses = MoneyMapper.class`.
+// Plain Spring component (not a MapStruct interface). Read direction needs an AssetResolver
+// to rehydrate the Asset held by the Money record — but it depends only on the core SPI, so
+// it stays in core with no dependency on the reference-data module (no cycle).
 //
-// Note: no @Cacheable here. toDomain is trivial (just delegates to AssetMapper.toDomain
-// which IS cached) — caching at the Money level would only add an extra cache layer for
-// a wrapper that allocates a tiny record. The Asset cache absorbs the N+1.
+// Callers pass an AssetResolver that is normally pre-populated (one batch query per aggregate
+// load), so resolving a whole entry's worth of Money values costs no extra round-trips.
+// Write direction is pure : flattening an Asset to (type, code, mic) needs no IO.
 @Component
 public class MoneyMapper {
 
-    private final AssetMapper assetMapper;
-
-    @Autowired
-    public MoneyMapper(AssetMapper assetMapper) {
-        this.assetMapper = assetMapper;
-    }
-
-    public Money toDomain(MoneyEntity entity) {
+    public Money toDomain(MoneyEntity entity, AssetResolver resolver) {
         if (entity == null) {
             return null;
         }
-        Asset asset = assetMapper.toDomain(
-                entity.getAssetType(),
-                entity.getAssetCode(),
-                entity.getAssetMic());
+        Asset asset = resolver.resolve(
+                new AssetRef(entity.getAssetType(), entity.getAssetCode(), entity.getAssetMic()));
         return new Money(entity.getMinorUnits(), asset);
     }
 
@@ -38,11 +31,11 @@ public class MoneyMapper {
         if (domain == null) {
             return null;
         }
+        Asset asset = domain.asset();
         return new MoneyEntity(
                 domain.minorUnits(),
-                assetMapper.typeOf(domain.asset()),
-                assetMapper.codeOf(domain.asset()),
-                assetMapper.micOf(domain.asset())
-        );
+                AssetRefs.typeOf(asset),
+                AssetRefs.codeOf(asset),
+                AssetRefs.micOf(asset));
     }
 }

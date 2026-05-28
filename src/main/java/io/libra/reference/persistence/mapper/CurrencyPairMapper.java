@@ -1,9 +1,9 @@
-package io.libra.core.persistence.mapper;
+package io.libra.reference.persistence.mapper;
 
 import io.libra.core.entities.Currency;
 import io.libra.core.entities.CurrencyPair;
-import io.libra.core.persistence.entity.CurrencyPairEntity;
-import io.libra.core.repository.CurrencyRepository;
+import io.libra.reference.persistence.entity.CurrencyPairEntity;
+import io.libra.reference.repository.CurrencyRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

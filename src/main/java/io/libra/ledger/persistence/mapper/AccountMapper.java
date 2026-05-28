@@ -1,25 +1,23 @@
 package io.libra.ledger.persistence.mapper;
 
 import io.libra.core.entities.Asset;
-import io.libra.core.persistence.mapper.AssetMapper;
 import io.libra.ledger.domain.Account;
 import io.libra.ledger.persistence.entity.AccountEntity;
+import io.libra.core.persistence.resolution.AssetRefs;
+import io.libra.core.persistence.resolution.AssetResolver;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.springframework.beans.factory.annotation.Autowired;
 
-// AccountMapper flattens the typed Asset into (asset_type, asset_code, asset_mic) on
-// write and rehydrates via AssetMapper on read. `asset_mic` is NULL for currency
-// accounts, MIC of the listing venue for security accounts.
-@Mapper(componentModel = "spring", uses = AssetMapper.class)
+// Flattens the typed Asset into (asset_type, asset_code, asset_mic) on write (pure, via
+// AssetRefs) and rehydrates it on read via the @Context AssetResolver — pre-populated once
+// by the calling service so no per-account lookup hits the DB here.
+@Mapper(componentModel = "spring")
 public abstract class AccountMapper {
 
-    @Autowired
-    protected AssetMapper assetMapper;
-
-    @Mapping(target = "asset", expression = "java(assetMapper.toDomain(entity.getAssetType(), entity.getAssetCode(), entity.getAssetMic()))")
-    public abstract Account toDomain(AccountEntity entity);
+    @Mapping(target = "asset", expression = "java(resolver.resolve(new io.libra.core.persistence.resolution.AssetRef(entity.getAssetType(), entity.getAssetCode(), entity.getAssetMic())))")
+    public abstract Account toDomain(AccountEntity entity, @Context AssetResolver resolver);
 
     @Mapping(target = "assetType", source = "asset", qualifiedByName = "assetType")
     @Mapping(target = "assetCode", source = "asset", qualifiedByName = "assetCode")
@@ -28,16 +26,16 @@ public abstract class AccountMapper {
 
     @Named("assetType")
     protected String assetType(Asset asset) {
-        return assetMapper.typeOf(asset);
+        return AssetRefs.typeOf(asset);
     }
 
     @Named("assetCode")
     protected String assetCode(Asset asset) {
-        return assetMapper.codeOf(asset);
+        return AssetRefs.codeOf(asset);
     }
 
     @Named("assetMic")
     protected String assetMic(Asset asset) {
-        return assetMapper.micOf(asset);
+        return AssetRefs.micOf(asset);
     }
 }

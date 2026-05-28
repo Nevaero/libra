@@ -1,14 +1,19 @@
-package io.libra.core.repository;
+package io.libra.reference.repository;
 
-import io.libra.core.persistence.entity.SecurityEntity;
+import io.libra.core.entities.enums.SecurityStatus;
+import io.libra.reference.persistence.entity.SecurityEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface SecurityRepository extends JpaRepository<SecurityEntity, UUID> {
+
+    List<SecurityEntity> findByStatus(SecurityStatus status);
 
     // Lookup by the business identity (ticker, mic). The ticker alone is NOT unique:
     // a delisting + relisting recycles the same ticker, and the same ticker can coexist
@@ -16,4 +21,9 @@ public interface SecurityRepository extends JpaRepository<SecurityEntity, UUID> 
     Optional<SecurityEntity> findByTickerAndMic(String ticker, String mic);
 
     Optional<SecurityEntity> findByIsin(String isin);
+
+    // Batch fetch for asset resolution : one query for all requested tickers, keyed back to
+    // (ticker, mic) in memory. Eliminates the N+1 when rehydrating an aggregate that holds
+    // several distinct securities.
+    List<SecurityEntity> findByTickerIn(Collection<String> tickers);
 }

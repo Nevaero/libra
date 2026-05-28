@@ -1,7 +1,7 @@
-package io.libra.core.persistence.mapper;
+package io.libra.reference.persistence.mapper;
 
 import io.libra.core.entities.calendar.HolidayCalendar;
-import io.libra.core.persistence.entity.HolidayCalendarEntity;
+import io.libra.reference.persistence.entity.HolidayCalendarEntity;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

@@ -1,6 +1,8 @@
 package io.libra.ledger.service.impl;
 
 import io.libra.core.entities.Money;
+import io.libra.core.persistence.resolution.AssetResolver;
+import io.libra.core.persistence.resolution.ReferenceResolution;
 import io.libra.ledger.commands.PostJournalEntryCommand;
 import io.libra.ledger.commands.vo.PostingDraft;
 import io.libra.ledger.domain.Account;
@@ -11,6 +13,7 @@ import io.libra.ledger.domain.enums.PostingType;
 import io.libra.ledger.domain.enums.entry.EntryPhase;
 import io.libra.ledger.domain.enums.entry.EntryStatus;
 import io.libra.ledger.events.JournalEntryPosted;
+import io.libra.ledger.persistence.LedgerRefs;
 import io.libra.ledger.persistence.entity.JournalEntryEntity;
 import io.libra.ledger.persistence.mapper.JournalEntryMapper;
 import io.libra.ledger.repository.JournalEntryRepository;
@@ -42,6 +45,8 @@ public class PostingServiceImpl implements PostingService {
     private final BalanceProjector balanceProjector;
 
     private final AccountManagementService accountManagementService;
+
+    private final ReferenceResolution referenceResolution;
 
     private final ApplicationEventPublisher events;
 
@@ -172,7 +177,8 @@ public class PostingServiceImpl implements PostingService {
                     "Entry " + bookingEntryId + " is in status " + entity.getStatus()
                             + ", expected POSTED");
         }
-        return journalEntryMapper.toDomain(entity);
+        AssetResolver resolver = referenceResolution.assetResolverFor(LedgerRefs.of(entity));
+        return journalEntryMapper.toDomain(entity, resolver);
     }
 
     // For each BOOKING posting on a pending account, emits two SETTLEMENT postings :

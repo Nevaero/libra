@@ -1,6 +1,6 @@
-package io.libra.core.repository;
+package io.libra.reference.repository;
 
-import io.libra.core.persistence.entity.HolidayCalendarEntity;
+import io.libra.reference.persistence.entity.HolidayCalendarEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

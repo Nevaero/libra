@@ -17,8 +17,8 @@ import lombok.ToString;
 import java.time.Instant;
 import java.util.UUID;
 
-// Asset polymorphism is flattened into (asset_type, asset_code) per the project
-// convention (see AssetMapper). The mapper resolves the domain Asset on read.
+// Asset polymorphism is flattened into (asset_type, asset_code, asset_mic) per the project
+// convention (see AssetRefs). The domain Asset is rehydrated on read via an AssetResolver.
 @Data
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
