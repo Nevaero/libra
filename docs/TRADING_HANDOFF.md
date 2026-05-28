@@ -2,7 +2,18 @@
 
 > Document de hand-off pour Claude Code (ou tout autre assistant) chargé de reprendre la conception et l'implémentation du module `trading` de Libra.
 >
-> **État d'avancement** : data model + events conçus en tutorat ; logique métier, schéma DB, topics Kafka, ports, ADRs **non encore tranchés** — laissés ouverts pour les prochaines sessions.
+> **État d'avancement** : ✅ **implémenté + testé (phase 1)**. Ce document conserve la conception d'origine ; les sections ci-dessous décrivent l'intention. **En cas de divergence, le code et `CLAUDE.md` font foi.** Pour le récapitulatif de ce qui a réellement été construit, voir l'encart « Implémentation » juste en dessous.
+>
+> ### Implémentation livrée (phase 1) — divergences vs cette conception
+>
+> - **Order unifié** : un seul record `Order` discriminé par `OrderType {MARKET, LIMIT}` + `limitPriceMinorUnits` nullable — **pas** la hiérarchie sealed `MarketOrder | LimitOrder` décrite plus bas.
+> - **Mono-leg** : `ParentOrder` existe mais n'est **pas** utilisé ; `submitOrder` crée un seul `Order` standalone. Le multi-leg (split cross-currency) est repoussé en phase 2.
+> - **Settlement synchrone** : trading **appelle** `settlement.scheduleSettlement(tradeId, bookingEntryId, tradeDate, assetClass)` dans sa TX — il ne **publie pas** un event que settlement consomme. Donc pas de `ParentOrderSettled`/dépendance inversée. `allowedDependencies = {core, util, ledger :: api, pricing :: api, validation :: api, settlement :: api}`.
+> - **Booking DvP** : le booking se fait via `TradeBooker` interne (deux legs équilibrés base + quote sur comptes pending), s'appuyant sur `LedgerService.resolve{Client,Counterparty}Account`. Phase BOOKING ; le batch settlement fait la phase 2.
+> - **États terminaux** : `EXECUTED` / `REJECTED` (validation) / `CANCELLED` (no-fill). `SETTLED` n'est pas posé par trading en phase 1 (viendra du batch).
+> - **Exécution** : `ExecutionSimulator` in-memory (fill au quote courant ; LIMIT marketable sinon no-fill). Pas de fills partiels.
+>
+> Spec canonique de l'implémentation : `CLAUDE.md` §4–5 + le code (`io.libra.trading`). La conception détaillée ci-dessous reste utile pour le *pourquoi* et pour la phase 2.
 
 ---
 

@@ -43,7 +43,7 @@ Le compteur `Question N :` sert au **tutorat conception**. Les sessions ledger /
 | Postgres | 16 | **18.4** (compose + Testcontainers) | Flyway 12.6.2 (override : Boot manage 11.x qui ne reconnaît pas PG18) + `flyway-database-postgresql` |
 | Lombok dans domaine | "Pas de Lombok" | **Records partout** (domaine = records ; persistence = POJO `@Data @Entity`) | Anti-Corruption Layer. Pas de `@Data` dans le domaine. |
 
-Stack confirmée : PostgreSQL 18.4 + JPA + Flyway 12.6.2, Spring Kafka, Spring Modulith outbox (JPA + Kafka externalization, table `event_publication` matérialisée en Flyway car Modulith 2.x ne la crée plus), Actuator + Micrometer + Prometheus, springdoc-openapi, Spring Security, WebMVC + WebSocket. Tests : JUnit 5 (**Platform 6.0**), **AssertJ + jqwik** (property-based, déjà utilisés), Testcontainers (Postgres 18.4 + Kafka dans `TestcontainersConfiguration`). À ajouter : ArchUnit.
+Stack confirmée : PostgreSQL 18.4 + JPA + Flyway 12.6.2, Spring Kafka, Spring Modulith outbox (JPA + Kafka externalization, table `event_publication` matérialisée en Flyway car Modulith 2.x ne la crée plus), Actuator + Micrometer + Prometheus, springdoc-openapi, Spring Security, WebMVC + WebSocket. Tests : JUnit 5 (**Platform 6.0**), **AssertJ + jqwik** (property-based, déjà utilisés), Testcontainers (Postgres 18.4 + Kafka dans `TestcontainersConfiguration`). **`ModularityTests`** (`spring-modulith-starter-test`, `ApplicationModules.verify()`) garde les frontières de modules ; ArchUnit reste optionnel (la vérif Modulith couvre déjà cycles + dépendances + types exposés).
 
 `compose.yaml` est **configuré** : `postgres:18.4` (host port **5433** pour éviter un conflit local) + `apache/kafka:4.3.0` (KRaft, single-node). `application.properties` pointe sur 5433.
 
@@ -65,11 +65,13 @@ io.libra
 ├── validation  ✅             # pré-trade : Chain of Responsibility (5 règles), consomme customer/pricing/ledger
 ├── settlement  ✅             # T+2 synchrone : scheduleSettlement (idempotent) + batch @Scheduled
 │                              #   (REQUIRES_NEW par instruction), BusinessDayCalculator. → {core, ledger}
-├── trading     ⏭️             # PROCHAIN (dernier) — orchestrateur ordres + exécution → booking → settlement
+├── trading     ✅             # orchestrateur ordres (phase 1) : submitOrder → idempotence → validation
+│                              #   → exécution simulée → booking DvP → scheduleSettlement. → {core, util,
+│                              #   ledger, pricing, validation, settlement} (tous en `:: api`)
 └── api                        # REST + WebSocket (non créé)
 ```
 
-Chaque module : `package-info.java` avec `@ApplicationModule` (+ `allowedDependencies`), sous-packages `port`/`events`/`internal`. `core` et `reference` exposent leurs types ; `reference` est fermé (`allowedDependencies={"core"}`) — personne n'importe ses internals, l'impl du SPI est injectée via l'interface core (**Dependency Inversion**).
+Chaque module : `package-info.java` avec `@ApplicationModule` (+ `allowedDependencies`), sous-packages `port`/`events`/`internal`. `core` est OPEN, `util` OPEN. Chaque module fermé **publie une named interface `@NamedInterface("api")`** couvrant ses packages `port`/`domain`/`commands` ; les consommateurs déclarent `"module :: api"`. `persistence`/`repository`/`internal`/`port.impl` restent encapsulés. `reference` reste fermé (`{"core","util"}`) — l'impl du SPI est injectée via l'interface core (**Dependency Inversion**). Le tout est **vérifié par `ModularityTests` (`ApplicationModules.verify()`)** : pas de cycle, dépendances déclarées respectées, accès uniquement aux types exposés.
 
 **Décision structurante** : le référentiel instruments a été extrait de `core` vers **`reference`** (un nouveau module). `core` ne porte que des **types**, jamais de logique/état. La résolution `(type, code, mic) → Asset` est un **SPI déclaré dans core, implémenté dans reference** (batch, élimine le N+1). Voir `docs/PRICING_HANDOFF.md` et les commits `reference`.
 
@@ -80,11 +82,13 @@ Chaque module : `package-info.java` avec `@ApplicationModule` (+ `allowedDepende
 4. ✅ **Customer** — implémenté + testé (`docs/CUSTOMER_HANDOFF.md`)
 5. ✅ **Validation** — implémenté + testé (`docs/VALIDATION_HANDOFF.md`)
 6. ✅ **Settlement** — implémenté + testé, **modèle synchrone** (`docs/SETTLEMENT_HANDOFF.md`)
-7. ⏭️ **Trading** — prochain et **dernier** (crée l'ordre, invoque validation, exécute → booking ledger → `scheduleSettlement`)
+7. ✅ **Trading** — implémenté + testé, **phase 1** (`docs/TRADING_HANDOFF.md`) — dernier module métier
+
+**Tous les modules métier sont implémentés, testés et vérifiés Modulith.** Reste l'`api` (REST/WebSocket) et les chantiers transverses (cf. §5).
 
 ## 5. État actuel du code
 
-Schéma Flyway en place (`V1__schema.sql` + `V2__latest_quotes_last_trade.sql`), tout compile et **~42 tests passent** (unitaires + jqwik + intégration Testcontainers).
+Schéma Flyway en place (`V1__schema.sql` + `V2` last-trade + `V3` settlement asset_class), tout compile et **70 tests passent** (unitaires + jqwik + intégration Testcontainers + `ModularityTests`), **0 warning**.
 
 **Ledger** (`io.libra.ledger`) — **implémenté + testé** :
 - domaine (records + invariant double-entry validé au compact constructor de `JournalEntry`), persistence `@Entity` + mappers MapStruct, repos, services par aggregate (`AccountManagementService`, `PostingService`, `ReadingService`, `MaintenanceService`), façade `LedgerService` (port), `BalanceProjector` interne (projection Balance dans la même TX, locking pessimiste), events via outbox, cycle T+2 booking→settlement. Test signature jqwik sur l'invariant.
@@ -104,9 +108,12 @@ Schéma Flyway en place (`V1__schema.sql` + `V2__latest_quotes_last_trade.sql`),
 **Settlement** (`io.libra.settlement`) — **implémenté + testé** :
 - **modèle synchrone** (révise le handoff event-driven) : trading appellera `scheduleSettlement(tradeId, bookingEntryId, tradeDate, assetClass)` dans sa TX → `settlement` ne dépend QUE de `{core, ledger}`, pas de cycle. `BusinessDayCalculator` (T+N, weekends + jours fériés, **test signature jqwik**), `SettlementService.runDueBatch` (batch matinal `@Scheduled`, chaque instruction settle en `REQUIRES_NEW` via `SettlementExecutor` → isolation d'échec → `SettlementBatch` COMPLETED/PARTIAL_FAILURE), `postSettlementEntry` du ledger pour la phase 2 (pending → final). `AssetClass` sur l'instruction + V3 Flyway. Seul morceau async = le décalage T+2 du batch.
 
-**Stub (scaffolding, pas de logique)** : `trading` (entities/events/persistence) — **dernier module, débloqué** (orchestre validation/pricing/ledger/settlement).
+**Trading** (`io.libra.trading`) — **implémenté + testé (phase 1)** :
+- `TradingService.submitOrder` (port) : chemin de commande **synchrone**, une seule TX → idempotence sur `(clientId, idempotencyKey)`, `validation.validate` (portier), `ExecutionSimulator` interne (fill au quote courant : ask en BUY / bid en SELL, LIMIT marketable sinon no-fill), `TradeBooker` interne (**booking DvP à deux legs** sur comptes pending : leg base + leg quote = notional), puis `settlement.scheduleSettlement`. États terminaux `EXECUTED`/`REJECTED`/`CANCELLED` ; `SETTLED` viendra du batch (phase 2). Mono-leg, simulateur in-memory. `LedgerService.resolve{Client,Counterparty}Account` ajoutés (find-or-open idempotent) pour provisionner les 4 comptes du DvP.
 
-**Ce qui reste globalement** : module `trading` (orchestrateur) ; module `api` (REST/WebSocket) non créé ; ArchUnit ; métriques Micrometer custom ; ADRs (`docs/adr/`) ; le transport pricing réel (mock-feed Bun, cf. `docs/PRICING_HANDOFF.md` §6.1) ; calendriers de jours fériés réels pour settlement.
+**Plus de stub** : tous les modules métier portent de la logique testée.
+
+**Ce qui reste globalement** : module `api` (REST/WebSocket) non créé ; métriques Micrometer custom ; **ADRs (`docs/adr/`) + modèle C4** (en cours) ; le transport pricing réel (mock-feed Bun, cf. `docs/PRICING_HANDOFF.md` §6.1) ; calendriers de jours fériés réels pour settlement ; trading phase 2 (multi-leg, vrai venue, transition `Order → SETTLED` sur event `TradeSettled`).
 
 ## 6. Conventions transversales (à appliquer dans tout code écrit)
 
@@ -147,7 +154,7 @@ Quand un module est conçu, produire un nouveau `docs/<MODULE>_HANDOFF.md` sur l
 
 ## 9. Livrables attendus par module (Definition of Done type)
 
-Pour chaque module : entités + invariants validés, schéma Flyway idempotent, port `Service` exposé via `@org.springframework.modulith.NamedInterface`, events publiés via outbox, tests unitaires + property-based + intégration Testcontainers + ArchUnit, métriques Micrometer, ADRs versionnées sous `docs/adr/`, README de module avec exemple déroulé.
+Pour chaque module : entités + invariants validés, schéma Flyway idempotent, port `Service` exposé via la named interface `:: api` du module (package-level `@NamedInterface("api")`), events publiés via outbox, tests unitaires + property-based + intégration Testcontainers + vérification Modulith (`ModularityTests`), métriques Micrometer, ADRs versionnées sous `docs/adr/`, README de module avec exemple déroulé.
 
 ## 10. Commandes utiles
 
