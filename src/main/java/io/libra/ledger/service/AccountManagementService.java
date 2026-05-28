@@ -37,4 +37,13 @@ public interface AccountManagementService {
     // type is derived from the asset class (Currency → CLIENT_CASH, Security → CLIENT_POSITION),
     // so callers (e.g. validation) need not know about AccountType.
     Optional<Account> findClientAccount(UUID ownerId, Asset asset);
+
+    // Resolve-or-open the client's account holding `asset` on the given settlement axis (pending
+    // = T+0 booking, final = settled). Idempotent : returns the existing account if present, else
+    // opens it. Used by trading to provision the legs of a Delivery-versus-Payment booking.
+    Account resolveClientAccount(UUID ownerId, Asset asset, boolean pending);
+
+    // Resolve-or-open the house counterparty account for `asset` (FX_COUNTERPARTY for a Currency,
+    // MARKET_COUNTERPARTY for a Security). The counterparty owner is a fixed system identity.
+    Account resolveCounterpartyAccount(Asset asset, boolean pending);
 }

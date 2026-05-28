@@ -39,6 +39,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccountManagementServiceImpl implements AccountManagementService {
 
+    // Fixed system identity owning every house counterparty account (the other side of client
+    // trades). One owner ; the AccountType (FX_COUNTERPARTY / MARKET_COUNTERPARTY) discriminates.
+    private static final UUID HOUSE_COUNTERPARTY_OWNER =
+            UUID.fromString("0190a000-0000-7000-8000-0000000000ff");
+
     private final AccountRepository accountRepository;
 
     private final AccountMapper accountMapper;
@@ -147,11 +152,41 @@ public class AccountManagementServiceImpl implements AccountManagementService {
                 .map(this::toDomain);
     }
 
+    @Override
+    @Transactional
+    public Account resolveClientAccount(UUID ownerId, Asset asset, boolean pending) {
+        return resolveOrOpen(ownerId, clientAccountTypeFor(asset), asset, pending);
+    }
+
+    @Override
+    @Transactional
+    public Account resolveCounterpartyAccount(Asset asset, boolean pending) {
+        return resolveOrOpen(HOUSE_COUNTERPARTY_OWNER, counterpartyAccountTypeFor(asset), asset, pending);
+    }
+
+    private Account resolveOrOpen(UUID ownerId, AccountType type, Asset asset, boolean pending) {
+        return accountRepository.findByOwnerIdAndAssetTypeAndAssetCodeAndAssetMicAndTypeAndPending(
+                        ownerId, AssetRefs.typeOf(asset), AssetRefs.codeOf(asset),
+                        AssetRefs.micOf(asset), type, pending)
+                .map(this::toDomain)
+                .orElseGet(() -> openAccount(new OpenAccountCommand(
+                        ownerId, type, asset, pending,
+                        type + ":" + asset.code() + (pending ? ":pending" : ":final"))));
+    }
+
     // A currency is held in cash, a security as a position. Sealed switch — no default.
     private AccountType clientAccountTypeFor(Asset asset) {
         return switch (asset) {
-            case Currency c -> AccountType.CLIENT_CASH;
-            case Security s -> AccountType.CLIENT_POSITION;
+            case Currency _ -> AccountType.CLIENT_CASH;
+            case Security _ -> AccountType.CLIENT_POSITION;
+        };
+    }
+
+    // FX delivers/receives currency against the FX desk ; equity trades face the market venue.
+    private AccountType counterpartyAccountTypeFor(Asset asset) {
+        return switch (asset) {
+            case Currency _ -> AccountType.FX_COUNTERPARTY;
+            case Security _ -> AccountType.MARKET_COUNTERPARTY;
         };
     }
 

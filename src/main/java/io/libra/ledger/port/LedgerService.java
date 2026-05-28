@@ -28,6 +28,12 @@ public interface LedgerService {
     // class). Used by validation to locate the balance an order would draw from.
     Optional<Account> findClientAccount(UUID ownerId, Asset asset);
 
+    // Resolve-or-open (idempotent) the accounts a Delivery-versus-Payment booking posts on.
+    // Trading provisions the client and house-counterparty legs (pending + final) of a trade.
+    Account resolveClientAccount(UUID ownerId, Asset asset, boolean pending);
+
+    Account resolveCounterpartyAccount(Asset asset, boolean pending);
+
     Account freezeAccount(UUID id, String reason);
 
     Account unfreezeAccount(UUID id, String reason);
