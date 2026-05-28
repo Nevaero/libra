@@ -21,7 +21,7 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 
 | ADR | Title | Status |
 |---|---|---|
-| [0001](./0001-modular-monolith.md) | Modular monolith over microservices | Planned |
+| [0001](./0001-modular-monolith.md) | Modular monolith over microservices | Accepted |
 | [0002](./0002-named-interface-boundaries.md) | Module boundaries via `:: api` named interfaces, verified | Planned |
 | [0003](./0003-physical-forex-t2-uniform.md) | Physical Forex with T+2, applied uniformly to equities | Planned |
 | [0004](./0004-money-minor-units.md) | Money as `BIGINT` minor units | Planned |
