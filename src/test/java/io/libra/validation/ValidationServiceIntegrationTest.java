@@ -22,7 +22,6 @@ import io.libra.ledger.port.LedgerService;
 import io.libra.pricing.domain.enums.Tenor;
 import io.libra.pricing.events.PriceTick;
 import io.libra.pricing.service.QuoteService;
-import io.libra.reference.commands.RegisterCurrencyPairCommand;
 import io.libra.reference.port.ReferenceDataService;
 import io.libra.util.Uuids;
 import io.libra.validation.domain.Approved;
@@ -102,8 +101,9 @@ class ValidationServiceIntegrationTest {
         customerService.updateKycLevel(clientId, KycLevel.BASIC);
         customerService.activate(clientId);
 
-        CurrencyPair pair = referenceData.registerCurrencyPair(
-                new RegisterCurrencyPairCommand(baseCode, quoteCode, 5, LIBRA_SIM));
+        CurrencyPair pair = referenceData.findPairByCodes(baseCode, quoteCode)
+                .orElseThrow(() -> new IllegalStateException(
+                        "test pair not seeded (add it to application.yml libra.test): " + baseCode + "/" + quoteCode));
         Currency quoteCcy = pair.quoteCurrency();
 
         // Fund the client's quote-currency cash account.

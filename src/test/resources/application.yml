@@ -1,0 +1,15 @@
+# Test-only reference data : the FX pairs the integration tests trade against. They are registered
+# once at context startup (idempotently) by TestcontainersConfiguration, so individual tests
+# resolve a pair via ReferenceDataService instead of registering it inline — inline registration
+# duplicated keys in the shared Testcontainers database when several test classes ran together.
+#
+# Pairs use seeded currencies (CHF/USD/EUR/GBP, all 2-decimal). GBP/CHF is intentionally absent :
+# it is owned by ReferenceDataIntegrationTest, which exercises registerCurrencyPair itself.
+libra:
+  test:
+    currency-pairs:
+      - { base: CHF, quote: GBP }   # trading : market buy
+      - { base: GBP, quote: EUR }   # trading : rejected (suspended client)
+      - { base: CHF, quote: EUR }   # trading : cancelled limit
+      - { base: EUR, quote: GBP }   # validation : approved
+      - { base: USD, quote: GBP }   # validation : rejected

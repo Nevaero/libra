@@ -22,7 +22,6 @@ import io.libra.ledger.port.LedgerService;
 import io.libra.pricing.domain.enums.Tenor;
 import io.libra.pricing.events.PriceTick;
 import io.libra.pricing.service.QuoteService;
-import io.libra.reference.commands.RegisterCurrencyPairCommand;
 import io.libra.reference.port.ReferenceDataService;
 import io.libra.settlement.domain.SettlementInstruction;
 import io.libra.settlement.domain.enums.SettlementStatus;
@@ -114,7 +113,7 @@ class TradingServiceIntegrationTest {
 
     @Test
     void rejectsASuspendedClientWithoutBookingATrade() {
-        Fixture f = setup("GBP", "CHF", 84_900, 85_000);
+        Fixture f = setup("GBP", "EUR", 84_900, 85_000);
         customerService.suspend(f.clientId(), "compliance hold");
 
         Order order = tradingService.submitOrder(buy(f, Uuids.newId(), OrderType.MARKET, Optional.empty()));
@@ -148,8 +147,9 @@ class TradingServiceIntegrationTest {
         customerService.updateKycLevel(clientId, KycLevel.BASIC);
         customerService.activate(clientId);
 
-        CurrencyPair pair = referenceData.registerCurrencyPair(
-                new RegisterCurrencyPairCommand(baseCode, quoteCode, 5, LIBRA_SIM));
+        CurrencyPair pair = referenceData.findPairByCodes(baseCode, quoteCode)
+                .orElseThrow(() -> new IllegalStateException(
+                        "test pair not seeded (add it to application.yml libra.test): " + baseCode + "/" + quoteCode));
         Currency quoteCcy = pair.quoteCurrency();
 
         // Fund the client's quote-currency cash account with 5000.00.
