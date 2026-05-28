@@ -1,10 +1,10 @@
-package io.libra.trading.entities;
+package io.libra.trading.domain;
 
 import io.libra.core.entities.Instrument;
 import io.libra.core.entities.Money;
 import io.libra.core.entities.enums.Side;
-import io.libra.trading.entities.enums.OrderStatus;
-import io.libra.trading.entities.enums.OrderType;
+import io.libra.trading.domain.enums.OrderStatus;
+import io.libra.trading.domain.enums.OrderType;
 
 import java.time.Instant;
 import java.util.Objects;

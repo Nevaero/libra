@@ -1,7 +1,7 @@
 package io.libra.validation.rules;
 
-import io.libra.validation.entities.ValidationContext;
-import io.libra.validation.entities.ValidationFailureReason;
+import io.libra.validation.domain.ValidationContext;
+import io.libra.validation.domain.ValidationFailureReason;
 
 import java.util.Optional;
 

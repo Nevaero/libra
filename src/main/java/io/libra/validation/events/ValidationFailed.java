@@ -1,6 +1,6 @@
 package io.libra.validation.events;
 
-import io.libra.validation.entities.ValidationFailureReason;
+import io.libra.validation.domain.ValidationFailureReason;
 
 import java.time.Instant;
 import java.util.List;

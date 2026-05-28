@@ -1,4 +1,4 @@
-package io.libra.trading.entities;
+package io.libra.trading.domain;
 
 import io.libra.core.entities.Money;
 

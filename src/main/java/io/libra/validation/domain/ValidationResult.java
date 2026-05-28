@@ -1,4 +1,4 @@
-package io.libra.validation.entities;
+package io.libra.validation.domain;
 
 import java.time.Instant;
 import java.util.UUID;

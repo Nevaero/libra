@@ -1,6 +1,6 @@
 package io.libra.settlement.events;
 
-import io.libra.settlement.entities.enums.BatchStatus;
+import io.libra.settlement.domain.enums.BatchStatus;
 
 import java.time.Instant;
 import java.time.LocalDate;

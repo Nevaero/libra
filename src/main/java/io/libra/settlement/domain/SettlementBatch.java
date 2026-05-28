@@ -1,6 +1,6 @@
-package io.libra.settlement.entities;
+package io.libra.settlement.domain;
 
-import io.libra.settlement.entities.enums.BatchStatus;
+import io.libra.settlement.domain.enums.BatchStatus;
 
 import java.time.Instant;
 import java.time.LocalDate;

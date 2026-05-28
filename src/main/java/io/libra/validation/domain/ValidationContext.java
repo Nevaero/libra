@@ -1,8 +1,8 @@
-package io.libra.validation.entities;
+package io.libra.validation.domain;
 
-import io.libra.customer.entities.Customer;
+import io.libra.customer.domain.Customer;
 import io.libra.ledger.domain.Balance;
-import io.libra.pricing.entities.LatestQuote;
+import io.libra.pricing.domain.LatestQuote;
 
 import java.util.Optional;
 

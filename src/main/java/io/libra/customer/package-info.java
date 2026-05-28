@@ -1,6 +1,6 @@
 @ApplicationModule(
         displayName = "Customer",
-        allowedDependencies = {"core"}
+        allowedDependencies = {"core", "util"}
 )
 package io.libra.customer;
 

@@ -1,6 +1,6 @@
 package io.libra.settlement.persistence.entity;
 
-import io.libra.settlement.entities.enums.BatchStatus;
+import io.libra.settlement.domain.enums.BatchStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

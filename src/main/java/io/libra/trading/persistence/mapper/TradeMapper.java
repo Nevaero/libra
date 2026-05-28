@@ -4,7 +4,7 @@ import io.libra.core.entities.Money;
 import io.libra.core.persistence.entity.MoneyEntity;
 import io.libra.core.persistence.mapper.MoneyMapper;
 import io.libra.core.persistence.resolution.AssetResolver;
-import io.libra.trading.entities.Trade;
+import io.libra.trading.domain.Trade;
 import io.libra.trading.persistence.entity.TradeEntity;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;

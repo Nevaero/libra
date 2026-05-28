@@ -2,7 +2,7 @@ package io.libra.trading.persistence.entity;
 
 import io.libra.core.entities.enums.Side;
 import io.libra.core.persistence.entity.MoneyEntity;
-import io.libra.trading.entities.enums.OrderStatus;
+import io.libra.trading.domain.enums.OrderStatus;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;

@@ -1,4 +1,4 @@
-package io.libra.settlement.entities.enums;
+package io.libra.settlement.domain.enums;
 
 public enum SettlementStatus {
     PENDING,    // créée à T+0, en attente du batch matinal à valueDate

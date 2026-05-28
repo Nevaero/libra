@@ -1,4 +1,4 @@
-package io.libra.validation.entities.enums;
+package io.libra.validation.domain.enums;
 
 public enum ValidationFailureCode {
     INSUFFICIENT_FUNDS,         // availableBalance < exposition de l'ordre

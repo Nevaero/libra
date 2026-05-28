@@ -1,6 +1,6 @@
 package io.libra.settlement.persistence.mapper;
 
-import io.libra.settlement.entities.SettlementBatch;
+import io.libra.settlement.domain.SettlementBatch;
 import io.libra.settlement.persistence.entity.SettlementBatchEntity;
 import org.mapstruct.Mapper;
 

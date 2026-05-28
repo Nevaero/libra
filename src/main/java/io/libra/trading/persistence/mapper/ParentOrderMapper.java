@@ -6,7 +6,7 @@ import io.libra.core.persistence.entity.MoneyEntity;
 import io.libra.core.persistence.mapper.MoneyMapper;
 import io.libra.core.persistence.resolution.AssetRefs;
 import io.libra.core.persistence.resolution.AssetResolver;
-import io.libra.trading.entities.ParentOrder;
+import io.libra.trading.domain.ParentOrder;
 import io.libra.trading.persistence.entity.ParentOrderEntity;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;

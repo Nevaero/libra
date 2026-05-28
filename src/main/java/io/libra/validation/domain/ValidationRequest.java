@@ -1,4 +1,4 @@
-package io.libra.validation.entities;
+package io.libra.validation.domain;
 
 import io.libra.core.entities.Instrument;
 import io.libra.core.entities.Money;

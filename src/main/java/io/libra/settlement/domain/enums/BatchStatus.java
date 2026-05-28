@@ -1,4 +1,4 @@
-package io.libra.settlement.entities.enums;
+package io.libra.settlement.domain.enums;
 
 public enum BatchStatus {
     RUNNING,            // batch en cours d'exécution

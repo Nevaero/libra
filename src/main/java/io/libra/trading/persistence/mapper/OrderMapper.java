@@ -7,7 +7,7 @@ import io.libra.core.persistence.mapper.MoneyMapper;
 import io.libra.core.persistence.resolution.AssetResolver;
 import io.libra.core.persistence.resolution.InstrumentRefs;
 import io.libra.core.persistence.resolution.InstrumentResolver;
-import io.libra.trading.entities.Order;
+import io.libra.trading.domain.Order;
 import io.libra.trading.persistence.entity.OrderEntity;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;

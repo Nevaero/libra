@@ -312,7 +312,7 @@ io.libra.validation
     └── ValidationFailed.java          (record, ≥1 reason invariant)
 ```
 
-Refactor associé : `Side` migré dans `io.libra.core.entities.enums` (depuis `io.libra.trading.entities.enums`).
+Refactor associé : `Side` migré dans `io.libra.core.entities.enums` (depuis `io.libra.trading.domain.enums`).
 
 Aucun service implémenté, aucune logique dans les règles, aucune migration Flyway (read-only — pas de DB own).
 

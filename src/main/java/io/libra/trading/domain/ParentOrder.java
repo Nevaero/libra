@@ -1,9 +1,9 @@
-package io.libra.trading.entities;
+package io.libra.trading.domain;
 
 import io.libra.core.entities.Asset;
 import io.libra.core.entities.Money;
 import io.libra.core.entities.enums.Side;
-import io.libra.trading.entities.enums.OrderStatus;
+import io.libra.trading.domain.enums.OrderStatus;
 
 import java.time.Instant;
 import java.util.Objects;

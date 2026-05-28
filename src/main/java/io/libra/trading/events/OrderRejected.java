@@ -1,6 +1,6 @@
 package io.libra.trading.events;
 
-import io.libra.trading.entities.Order;
+import io.libra.trading.domain.Order;
 
 import java.time.Instant;
 
