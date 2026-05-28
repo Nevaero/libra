@@ -1,0 +1,64 @@
+# Libra — local dev stack. `docker compose up -d` brings up Postgres + Kafka so the
+# application can boot (`./gradlew bootRun`) and Flyway can run its migrations.
+#
+# Versions pinned intentionally :
+#   - postgres 18.4 : matches the version we target in prod / pitch
+#   - apache/kafka 4.3.0 : official Apache image with KRaft (no Zookeeper)
+
+services:
+
+  postgres:
+    image: postgres:18.4
+    container_name: libra-postgres
+    environment:
+      POSTGRES_DB: libra
+      POSTGRES_USER: libra
+      POSTGRES_PASSWORD: libra
+    ports:
+      # Host 5433 → container 5432 : 5432 is already used by another local Postgres.
+      - "5433:5432"
+    volumes:
+      # Postgres 18+ : mount the whole `/var/lib/postgresql` (NOT `.../data`) so the
+      # major-version subdirectory layout works and `pg_upgrade --link` stays usable.
+      - libra-postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U libra -d libra"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  kafka:
+    image: apache/kafka:4.3.0
+    container_name: libra-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      # Single-node KRaft : the same process is broker AND controller.
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      # Advertised on localhost so producers/consumers on the host machine reach it
+      # via `localhost:9092` (matches spring.kafka.bootstrap-servers).
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      # Single-node : replication factor must be 1 for internal topics, otherwise the
+      # broker refuses to elect a leader for __consumer_offsets / outbox topics.
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: libra-local-cluster-id
+    volumes:
+      - libra-kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  libra-postgres-data:
+  libra-kafka-data:
