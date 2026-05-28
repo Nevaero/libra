@@ -1,12 +1,17 @@
 package io.libra.ledger.service.impl;
 
+import io.libra.core.entities.Asset;
+import io.libra.core.entities.Currency;
 import io.libra.core.entities.Money;
+import io.libra.core.entities.Security;
+import io.libra.core.persistence.resolution.AssetRefs;
 import io.libra.core.persistence.resolution.AssetResolver;
 import io.libra.core.persistence.resolution.ReferenceResolution;
 import io.libra.ledger.commands.OpenAccountCommand;
 import io.libra.ledger.domain.Account;
 import io.libra.ledger.domain.Balance;
 import io.libra.ledger.domain.enums.account.AccountStatus;
+import io.libra.ledger.domain.enums.account.AccountType;
 import io.libra.ledger.events.AccountOpened;
 import io.libra.ledger.events.AccountStatusChanged;
 import io.libra.ledger.persistence.LedgerRefs;
@@ -131,6 +136,23 @@ public class AccountManagementServiceImpl implements AccountManagementService {
                         source.getType(),
                         !source.isPending()
                 ).map(this::toDomain));
+    }
+
+    @Override
+    public Optional<Account> findClientAccount(UUID ownerId, Asset asset) {
+        AccountType type = clientAccountTypeFor(asset);
+        return accountRepository.findByOwnerIdAndAssetTypeAndAssetCodeAndAssetMicAndTypeAndPending(
+                        ownerId, AssetRefs.typeOf(asset), AssetRefs.codeOf(asset),
+                        AssetRefs.micOf(asset), type, false)
+                .map(this::toDomain);
+    }
+
+    // A currency is held in cash, a security as a position. Sealed switch — no default.
+    private AccountType clientAccountTypeFor(Asset asset) {
+        return switch (asset) {
+            case Currency c -> AccountType.CLIENT_CASH;
+            case Security s -> AccountType.CLIENT_POSITION;
+        };
     }
 
     @Override

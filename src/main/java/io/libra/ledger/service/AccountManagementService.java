@@ -1,5 +1,6 @@
 package io.libra.ledger.service;
 
+import io.libra.core.entities.Asset;
 import io.libra.ledger.commands.OpenAccountCommand;
 import io.libra.ledger.domain.Account;
 
@@ -31,4 +32,9 @@ public interface AccountManagementService {
     // to translate BOOKING postings on pending accounts into SETTLEMENT postings on
     // final accounts (and vice versa for unwind).
     Optional<Account> findMirrorAccount(UUID accountId);
+
+    // Returns the client's final (settled, pending=false) account holding `asset`. The account
+    // type is derived from the asset class (Currency → CLIENT_CASH, Security → CLIENT_POSITION),
+    // so callers (e.g. validation) need not know about AccountType.
+    Optional<Account> findClientAccount(UUID ownerId, Asset asset);
 }

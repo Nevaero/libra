@@ -47,6 +47,11 @@ public class LedgerServiceImpl implements LedgerService {
     }
 
     @Override
+    public Optional<Account> findClientAccount(UUID ownerId, io.libra.core.entities.Asset asset) {
+        return accountManagementService.findClientAccount(ownerId, asset);
+    }
+
+    @Override
     public Account freezeAccount(UUID id, String reason) {
         return accountManagementService.freezeAccount(id, reason);
     }

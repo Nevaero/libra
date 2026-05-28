@@ -62,8 +62,8 @@ io.libra
 ├── pricing     ✅             # market data : QuoteService (upsert optimiste), adapters FIX/OANDA,
 │                              #   bootstrap config-driven (YAML), port read getLatestQuote
 ├── customer    ✅             # CustomerService : onboarding + lifecycle réglementaire + events
-├── trading                    # stubs (entities/events/persistence)
-├── validation  ⏭️             # PROCHAIN — règles pré-trade (consomme customer/pricing/ledger), scaffoldé
+├── validation  ✅             # pré-trade : Chain of Responsibility (5 règles), consomme customer/pricing/ledger
+├── trading     ⏭️             # PROCHAIN — ordres + exécution, scaffoldé (entities/events/persistence)
 ├── settlement                 # stubs
 └── api                        # REST + WebSocket (non créé)
 ```
@@ -77,8 +77,8 @@ Chaque module : `package-info.java` avec `@ApplicationModule` (+ `allowedDepende
 2. ✅ **Reference** (Security Master) — implémenté + testé
 3. ✅ **Pricing** — implémenté + testé (`docs/PRICING_HANDOFF.md`) ; reste le transport réel (mock-feed, cf. handoff §6.1)
 4. ✅ **Customer** — implémenté + testé (`docs/CUSTOMER_HANDOFF.md`)
-5. ⏭️ **Validation** — prochain (point de convergence : consomme customer + pricing + ledger)
-6. Trading
+5. ✅ **Validation** — implémenté + testé (`docs/VALIDATION_HANDOFF.md`)
+6. ⏭️ **Trading** — prochain (crée l'ordre, invoque validation, exécute → booking ledger)
 7. Settlement
 
 ## 5. État actuel du code
@@ -97,7 +97,10 @@ Schéma Flyway en place (`V1__schema.sql` + `V2__latest_quotes_last_trade.sql`),
 **Customer** (`io.libra.customer`) — **implémenté + testé** :
 - `CustomerService` (port unique) : `onboard` (→ PENDING_KYC), state machine réglementaire (`activate` gated sur KYC, `suspend`/`reactivate`, `close`), `updateKycLevel`/`updateRiskProfile`, events via outbox. Domaine = records, persistence ACL.
 
-**Stubs (scaffolding, pas de logique)** : `trading`, `validation` (rules scaffoldées), `settlement`.
+**Validation** (`io.libra.validation`) — **implémenté + testé** :
+- `ValidationService` (port) : portier pré-trade, Chain of Responsibility (5 règles : customer actif, KYC, instrument tradable, fonds suffisants, sanity prix limite), collect-all → `Approved`/`Rejected` + event `ValidationFailed`. Contexte construit depuis customer+ledger+pricing ; `LedgerService.findClientAccount` ajouté pour localiser le solde.
+
+**Stubs (scaffolding, pas de logique)** : `trading` (entities/events/persistence), `settlement`.
 
 **Ce qui reste globalement** : module `api` (REST/WebSocket) non créé ; ArchUnit ; métriques Micrometer custom ; ADRs (`docs/adr/`) ; le transport pricing réel (mock-feed Bun, cf. `docs/PRICING_HANDOFF.md` §6.1) ; modules customer→settlement.
 

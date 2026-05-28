@@ -1,5 +1,6 @@
 package io.libra.ledger.port;
 
+import io.libra.core.entities.Asset;
 import io.libra.ledger.commands.OpenAccountCommand;
 import io.libra.ledger.commands.PostJournalEntryCommand;
 import io.libra.ledger.domain.Account;
@@ -22,6 +23,10 @@ public interface LedgerService {
     Optional<Account> findAccountById(UUID id);
 
     List<Account> findAccountsByOwnerId(UUID ownerId);
+
+    // The client's final settled account holding `asset` (account type derived from the asset
+    // class). Used by validation to locate the balance an order would draw from.
+    Optional<Account> findClientAccount(UUID ownerId, Asset asset);
 
     Account freezeAccount(UUID id, String reason);
 
