@@ -1,5 +1,6 @@
 package io.libra.settlement.domain;
 
+import io.libra.settlement.domain.enums.AssetClass;
 import io.libra.settlement.domain.enums.SettlementStatus;
 
 import java.time.Instant;
@@ -7,12 +8,13 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
-// Aggregate root of the settlement module. Created when a TradeExecuted is observed.
+// Aggregate root of the settlement module. Created synchronously by trading at execution time.
 // Lifecycle : PENDING -> SETTLED | FAILED.
 public record SettlementInstruction(
         UUID id,
         UUID tradeId,
         UUID bookingEntryId,
+        AssetClass assetClass,
         LocalDate valueDate,
         SettlementStatus status,
         Instant createdAt,
@@ -24,6 +26,7 @@ public record SettlementInstruction(
         Objects.requireNonNull(id, "id must not be null");
         Objects.requireNonNull(tradeId, "tradeId must not be null");
         Objects.requireNonNull(bookingEntryId, "bookingEntryId must not be null");
+        Objects.requireNonNull(assetClass, "assetClass must not be null");
         Objects.requireNonNull(valueDate, "valueDate must not be null");
         Objects.requireNonNull(status, "status must not be null");
         Objects.requireNonNull(createdAt, "createdAt must not be null");

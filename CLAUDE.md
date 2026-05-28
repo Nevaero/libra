@@ -63,8 +63,9 @@ io.libra
 │                              #   bootstrap config-driven (YAML), port read getLatestQuote
 ├── customer    ✅             # CustomerService : onboarding + lifecycle réglementaire + events
 ├── validation  ✅             # pré-trade : Chain of Responsibility (5 règles), consomme customer/pricing/ledger
-├── trading     ⏭️             # PROCHAIN — ordres + exécution, scaffoldé (entities/events/persistence)
-├── settlement                 # stubs
+├── settlement  ✅             # T+2 synchrone : scheduleSettlement (idempotent) + batch @Scheduled
+│                              #   (REQUIRES_NEW par instruction), BusinessDayCalculator. → {core, ledger}
+├── trading     ⏭️             # PROCHAIN (dernier) — orchestrateur ordres + exécution → booking → settlement
 └── api                        # REST + WebSocket (non créé)
 ```
 
@@ -78,8 +79,8 @@ Chaque module : `package-info.java` avec `@ApplicationModule` (+ `allowedDepende
 3. ✅ **Pricing** — implémenté + testé (`docs/PRICING_HANDOFF.md`) ; reste le transport réel (mock-feed, cf. handoff §6.1)
 4. ✅ **Customer** — implémenté + testé (`docs/CUSTOMER_HANDOFF.md`)
 5. ✅ **Validation** — implémenté + testé (`docs/VALIDATION_HANDOFF.md`)
-6. ⏭️ **Trading** — prochain (crée l'ordre, invoque validation, exécute → booking ledger)
-7. Settlement
+6. ✅ **Settlement** — implémenté + testé, **modèle synchrone** (`docs/SETTLEMENT_HANDOFF.md`)
+7. ⏭️ **Trading** — prochain et **dernier** (crée l'ordre, invoque validation, exécute → booking ledger → `scheduleSettlement`)
 
 ## 5. État actuel du code
 
@@ -100,9 +101,12 @@ Schéma Flyway en place (`V1__schema.sql` + `V2__latest_quotes_last_trade.sql`),
 **Validation** (`io.libra.validation`) — **implémenté + testé** :
 - `ValidationService` (port) : portier pré-trade, Chain of Responsibility (5 règles : customer actif, KYC, instrument tradable, fonds suffisants, sanity prix limite), collect-all → `Approved`/`Rejected` + event `ValidationFailed`. Contexte construit depuis customer+ledger+pricing ; `LedgerService.findClientAccount` ajouté pour localiser le solde.
 
-**Stubs (scaffolding, pas de logique)** : `trading` (entities/events/persistence), `settlement`.
+**Settlement** (`io.libra.settlement`) — **implémenté + testé** :
+- **modèle synchrone** (révise le handoff event-driven) : trading appellera `scheduleSettlement(tradeId, bookingEntryId, tradeDate, assetClass)` dans sa TX → `settlement` ne dépend QUE de `{core, ledger}`, pas de cycle. `BusinessDayCalculator` (T+N, weekends + jours fériés, **test signature jqwik**), `SettlementService.runDueBatch` (batch matinal `@Scheduled`, chaque instruction settle en `REQUIRES_NEW` via `SettlementExecutor` → isolation d'échec → `SettlementBatch` COMPLETED/PARTIAL_FAILURE), `postSettlementEntry` du ledger pour la phase 2 (pending → final). `AssetClass` sur l'instruction + V3 Flyway. Seul morceau async = le décalage T+2 du batch.
 
-**Ce qui reste globalement** : module `api` (REST/WebSocket) non créé ; ArchUnit ; métriques Micrometer custom ; ADRs (`docs/adr/`) ; le transport pricing réel (mock-feed Bun, cf. `docs/PRICING_HANDOFF.md` §6.1) ; modules customer→settlement.
+**Stub (scaffolding, pas de logique)** : `trading` (entities/events/persistence) — **dernier module, débloqué** (orchestre validation/pricing/ledger/settlement).
+
+**Ce qui reste globalement** : module `trading` (orchestrateur) ; module `api` (REST/WebSocket) non créé ; ArchUnit ; métriques Micrometer custom ; ADRs (`docs/adr/`) ; le transport pricing réel (mock-feed Bun, cf. `docs/PRICING_HANDOFF.md` §6.1) ; calendriers de jours fériés réels pour settlement.
 
 ## 6. Conventions transversales (à appliquer dans tout code écrit)
 

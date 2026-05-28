@@ -1,5 +1,6 @@
 package io.libra.settlement.persistence.entity;
 
+import io.libra.settlement.domain.enums.AssetClass;
 import io.libra.settlement.domain.enums.SettlementStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,6 +36,10 @@ public class SettlementInstructionEntity {
 
     @Column(name = "booking_entry_id", nullable = false)
     private UUID bookingEntryId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "asset_class", nullable = false, length = 8)
+    private AssetClass assetClass;
 
     @Column(name = "value_date", nullable = false)
     private LocalDate valueDate;
