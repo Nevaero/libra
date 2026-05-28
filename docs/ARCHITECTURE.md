@@ -11,6 +11,20 @@ decision records under [`docs/adr/`](./adr).
 
 ---
 
+## Architectural principles
+
+Three principles shape every diagram and decision below. Each row points to where the principle
+lives in the code and the record that justifies it, so an interviewer can verify the claim in
+seconds rather than take it on faith.
+
+| Principle | Where it lives in Libra | Recorded in |
+|---|---|---|
+| **Hexagonal (ports and adapters)** | Ports are the `*/port` service interfaces. Adapters are the inbound price clients (`pricing/client`, FIX and OANDA), the persistence layer (JPA repositories plus MapStruct mappers), and the planned REST/WebSocket API. The domain stays as pure records, isolated from infrastructure. | C4 Level 3 below; [ADR-0002](./adr/0002-named-interface-boundaries.md) |
+| **Domain-Driven Design** | Bounded contexts are the modules. Aggregates: `JournalEntry`/`Account`, `Order`, `Customer`, `SettlementInstruction`. Value objects: `Money`, `Asset`, `CurrencyPair`. Domain events flow through the outbox. An anti-corruption layer keeps domain records separate from JPA POJOs. | [ADR-0006](./adr/0006-transactional-outbox.md), [ADR-0007](./adr/0007-anti-corruption-layer.md) |
+| **SOLID** | SRP: ledger services are split per aggregate. OCP: the validation rule chain and sealed hierarchies extend without edits. LSP: exhaustive `switch` over the sealed `Asset`/`Instrument` types. ISP: narrow port interfaces. DIP: the resolution SPI is declared in `core` and implemented in `reference`. | [ADR-0008](./adr/0008-reference-resolution-spi.md), [ADR-0017](./adr/0017-validation-chain-of-responsibility.md) |
+
+---
+
 ## Level 1: System Context
 
 Who uses Libra and what it talks to.
