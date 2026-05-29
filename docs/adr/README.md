@@ -21,21 +21,21 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 
 | ADR | Title | Status |
 |---|---|---|
-| [0001](./0001-modular-monolith.md) | Modular monolith over microservices | Accepted |
-| [0002](./0002-named-interface-boundaries.md) | Module boundaries via fine-grained named interfaces, verified | Accepted |
-| [0003](./0003-physical-forex-t2-uniform.md) | Physical Forex with T+2, applied uniformly to equities | Accepted |
-| [0004](./0004-money-minor-units.md) | Money as `BIGINT` minor units | Accepted |
-| [0005](./0005-uuidv7-instant-utc.md) | UUIDv7 identifiers and `Instant` UTC timestamps | Accepted |
-| [0006](./0006-transactional-outbox.md) | Transactional outbox for all events | Accepted |
-| [0007](./0007-anti-corruption-layer.md) | Anti-corruption layer: domain records vs JPA POJOs | Accepted |
-| [0008](./0008-reference-resolution-spi.md) | Dependency inversion for reference resolution | Accepted |
-| [0009](./0009-sync-command-async-fanout.md) | Synchronous command path, asynchronous fan-out | Accepted |
+| [0001](system/0001-modular-monolith.md) | Modular monolith over microservices | Accepted |
+| [0002](system/0002-named-interface-boundaries.md) | Module boundaries via fine-grained named interfaces, verified | Accepted |
+| [0003](system/0003-physical-forex-t2-uniform.md) | Physical Forex with T+2, applied uniformly to equities | Accepted |
+| [0004](system/0004-money-minor-units.md) | Money as `BIGINT` minor units | Accepted |
+| [0005](system/0005-uuidv7-instant-utc.md) | UUIDv7 identifiers and `Instant` UTC timestamps | Accepted |
+| [0006](system/0006-transactional-outbox.md) | Transactional outbox for all events | Accepted |
+| [0007](system/0007-anti-corruption-layer.md) | Anti-corruption layer: domain records vs JPA POJOs | Accepted |
+| [0008](system/0008-reference-resolution-spi.md) | Dependency inversion for reference resolution | Accepted |
+| [0009](system/0009-sync-command-async-fanout.md) | Synchronous command path, asynchronous fan-out | Accepted |
 
 ### Per-module
 
 | ADR | Title | Status |
 |---|---|---|
-| [0010](./0010-ledger-two-phase-booking.md) | Ledger: two-phase booking (pending then final) for T+2 | Planned |
+| [0010](./0010-ledger-two-phase-booking.md) | Ledger: two-phase booking (pending then final) for T+2 | Accepted |
 | [0011](./0011-double-entry-invariant-at-construction.md) | Ledger: double-entry invariant validated at construction | Planned |
 | [0012](./0012-balance-projection-pessimistic-locking.md) | Ledger: pessimistic locking on the Balance projection | Planned |
 | [0013](./0013-security-master-extraction.md) | Reference: Security Master extracted from `core` | Planned |

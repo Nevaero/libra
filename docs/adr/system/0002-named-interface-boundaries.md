@@ -88,5 +88,5 @@ by `ApplicationModules.verify()` in `ModularityTests`.**
 
 - Enforces the boundaries chosen in [ADR-0001](0001-modular-monolith.md).
 - The named interfaces and the full dependency table are in
-  [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md) (Level 3).
+  [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md) (Level 3).
 - Implemented in each module's `package-info.java` and in `src/test/java/io/libra/ModularityTests.java`.

@@ -85,4 +85,4 @@ last responsible moment.
   [ADR-0002](0002-named-interface-boundaries.md).
 - The synchronous, single-transaction command path is covered in
   [ADR-0009](0009-sync-command-async-fanout.md).
-- Visualized in [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md) (Level 2 Containers, Level 3 Components).
+- Visualized in [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md) (Level 2 Containers, Level 3 Components).
