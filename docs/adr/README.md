@@ -36,7 +36,7 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 | ADR | Title | Status |
 |---|---|---|
 | [0010](./0010-ledger-two-phase-booking.md) | Ledger: two-phase booking (pending then final) for T+2 | Accepted |
-| [0011](./0011-double-entry-invariant-at-construction.md) | Ledger: double-entry invariant validated at construction | Planned |
+| [0011](./0011-double-entry-invariant-at-construction.md) | Ledger: double-entry invariant validated at construction | Accepted |
 | [0012](./0012-balance-projection-pessimistic-locking.md) | Ledger: pessimistic locking on the Balance projection | Planned |
 | [0013](./0013-security-master-extraction.md) | Reference: Security Master extracted from `core` | Planned |
 | [0014](./0014-pricing-optimistic-upsert.md) | Pricing: lock-free optimistic upsert on `sequence` | Planned |
