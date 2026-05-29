@@ -39,7 +39,7 @@ orchestrator.
 Idempotency: `submitOrder` is idempotent on `(clientId, idempotencyKey)`, backed by a database UNIQUE
 constraint. A replayed submission resolves to the original order rather than creating a second one.
 That gives exactly-once submission against at-least-once clients, the same idempotency discipline at
-the command boundary that the outbox applies to events ([ADR-0006](0006-transactional-outbox.md)).
+the command boundary that the outbox applies to events ([ADR-0006](../system/0006-transactional-outbox.md)).
 
 Order model: a single `Order` record discriminated by an `OrderType` enum (`MARKET` or `LIMIT`) with
 a nullable limit price, rather than a sealed `MarketOrder | LimitOrder` hierarchy. For two variants
@@ -79,5 +79,5 @@ divergent variants.
 
 - Feeds the DvP booking ([ADR-0020](0020-trading-dvp-booking.md)).
 - Idempotency mirrors the outbox's idempotent-consumer discipline
-  ([ADR-0006](0006-transactional-outbox.md)).
+  ([ADR-0006](../system/0006-transactional-outbox.md)).
 - Phase-1 scope; multi-leg and a real venue are phase 2.

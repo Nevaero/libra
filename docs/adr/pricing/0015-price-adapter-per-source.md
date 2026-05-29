@@ -38,7 +38,7 @@ shape), rather than one format-keyed client juggling several providers' quirks.
 
 Each adapter is an inbound adapter that translates the raw provider model into a normalized
 `PriceTick` and calls the `QuoteService` port. This is the anti-corruption layer of
-[ADR-0007](0007-anti-corruption-layer.md) applied at the integration edge instead of the
+[ADR-0007](../system/0007-anti-corruption-layer.md) applied at the integration edge instead of the
 persistence edge: the foreign format is contained inside the adapter, and the rest of the system
 only ever sees the canonical `PriceTick`. That is what makes adding or removing a provider trivial,
 the blast radius is a single class, and the core has zero knowledge of FIX or OANDA.
@@ -79,4 +79,4 @@ the reverse), and Liskov substitutability behind `PriceProviderClient`.
 
 - The canonical `PriceTick` feeds the lock-free upsert
   ([ADR-0014](0014-pricing-optimistic-upsert.md)).
-- Config-driven resolution uses the reference SPI ([ADR-0008](0008-reference-resolution-spi.md)).
+- Config-driven resolution uses the reference SPI ([ADR-0008](../system/0008-reference-resolution-spi.md)).

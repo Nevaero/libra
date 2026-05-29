@@ -81,6 +81,6 @@ path. That is a distributed monolith's cost without a distributed system's need.
 
 - The asynchronous fan-out mechanism is the outbox ([ADR-0006](0006-transactional-outbox.md)).
 - Synchronous settlement orchestration keeps the command path acyclic
-  ([ADR-0018](0018-settlement-synchronous-orchestration.md)).
+  ([ADR-0018](../settlement/0018-settlement-synchronous-orchestration.md)).
 - The modular monolith makes in-process synchronous calls cheap
   ([ADR-0001](0001-modular-monolith.md)).

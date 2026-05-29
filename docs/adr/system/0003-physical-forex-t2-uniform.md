@@ -80,6 +80,6 @@ demo.
 
 - Realized by the `settlement` module (two-phase booking, `BusinessDayCalculator`) and the ledger's
   pending and final accounts.
-- Relates to [ADR-0010](0010-ledger-two-phase-booking.md) (two-phase booking),
-  [ADR-0018](0018-settlement-synchronous-orchestration.md) (synchronous orchestration), and
-  [ADR-0020](0020-trading-dvp-booking.md) (DvP booking).
+- Relates to [ADR-0010](../ledger/0010-ledger-two-phase-booking.md) (two-phase booking),
+  [ADR-0018](../settlement/0018-settlement-synchronous-orchestration.md) (synchronous orchestration), and
+  [ADR-0020](../trading/0020-trading-dvp-booking.md) (DvP booking).

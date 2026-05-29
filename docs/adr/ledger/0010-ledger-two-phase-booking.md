@@ -6,7 +6,7 @@
 
 ## Context and problem statement
 
-Physical T+2 settlement ([ADR-0003](0003-physical-forex-t2-uniform.md)) means a trade is agreed at
+Physical T+2 settlement ([ADR-0003](../system/0003-physical-forex-t2-uniform.md)) means a trade is agreed at
 T+0 and the assets are exchanged at T+2. The ledger must record the obligation at T+0 and the
 delivery at T+2, without ever mutating a posting, and it must keep settled funds distinct from
 committed-but-unsettled funds. The delay is not arbitrary: the broker does not hold the counter
@@ -58,8 +58,8 @@ class.
   step that moves pending to final.
 - Trade-off: the projection derives available from pending rather than reading a single column.
 - Follow-up: the settlement phase is driven by the T+2 batch
-  ([ADR-0019](0019-settlement-batch-failure-isolation.md)), and the booking entry itself is the DvP
-  entry ([ADR-0020](0020-trading-dvp-booking.md)).
+  ([ADR-0019](../settlement/0019-settlement-batch-failure-isolation.md)), and the booking entry itself is the DvP
+  entry ([ADR-0020](../trading/0020-trading-dvp-booking.md)).
 
 ## Pros and cons of the options
 
@@ -81,10 +81,10 @@ class.
 
 ## Links
 
-- Realizes the T+2 model of [ADR-0003](0003-physical-forex-t2-uniform.md).
+- Realizes the T+2 model of [ADR-0003](../system/0003-physical-forex-t2-uniform.md).
 - The settlement phase is driven by the batch
-  ([ADR-0018](0018-settlement-synchronous-orchestration.md),
-  [ADR-0019](0019-settlement-batch-failure-isolation.md)).
-- The booking entry is the DvP two-leg entry ([ADR-0020](0020-trading-dvp-booking.md)).
+  ([ADR-0018](../settlement/0018-settlement-synchronous-orchestration.md),
+  [ADR-0019](../settlement/0019-settlement-batch-failure-isolation.md)).
+- The booking entry is the DvP two-leg entry ([ADR-0020](../trading/0020-trading-dvp-booking.md)).
 - The available-balance derivation relates to the Balance projection
-  ([ADR-0012](../0012-balance-projection-pessimistic-locking.md)).
+  ([ADR-0012](0012-balance-projection-pessimistic-locking.md)).

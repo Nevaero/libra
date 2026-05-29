@@ -85,4 +85,4 @@ settlement value date, a trade date, a holiday calendar date, a customer birth d
 
 - `Uuids.newId()` in `util` generates every aggregate id.
 - `Instant` is used across the domain records; `LocalDate` carries value and trade dates in
-  `settlement` (see the `BusinessDayCalculator` and [ADR-0019](0019-settlement-batch-failure-isolation.md)).
+  `settlement` (see the `BusinessDayCalculator` and [ADR-0019](../settlement/0019-settlement-batch-failure-isolation.md)).

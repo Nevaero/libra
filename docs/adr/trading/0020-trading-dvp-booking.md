@@ -14,11 +14,11 @@ expresses the booking so that the ledger's per-asset invariant holds and the T+2
 
 - A trade is two-sided (one asset delivered against another), so the booking must move two assets.
 - The per-asset double-entry invariant must hold
-  ([ADR-0011](0011-double-entry-invariant-at-construction.md)).
+  ([ADR-0011](../ledger/0011-double-entry-invariant-at-construction.md)).
 - The booking must post to pending accounts for the T+2 model
-  ([ADR-0010](0010-ledger-two-phase-booking.md)).
+  ([ADR-0010](../ledger/0010-ledger-two-phase-booking.md)).
 - One booking shape should serve FX and equity
-  ([ADR-0003](0003-physical-forex-t2-uniform.md)).
+  ([ADR-0003](../system/0003-physical-forex-t2-uniform.md)).
 
 ## Considered options
 
@@ -35,7 +35,7 @@ balanced per asset, a client posting against the house-counterparty posting, so 
 the double-entry invariant per asset by construction.
 
 This is Delivery-versus-Payment, the shape that unifies FX and equity
-([ADR-0003](0003-physical-forex-t2-uniform.md)): an FX trade is currency against currency, an equity
+([ADR-0003](../system/0003-physical-forex-t2-uniform.md)): an FX trade is currency against currency, an equity
 trade is security against cash, both expressed as two balanced legs. The sign convention is
 ledger-centric, since the client account is a liability for Libra, so CREDIT increases what the
 client owns. A BUY credits the client's base leg and debits its quote leg, a SELL flips both, and the
@@ -70,8 +70,8 @@ the order and trade linkage is carried in the description.
 
 ## Links
 
-- Realizes DvP from [ADR-0003](0003-physical-forex-t2-uniform.md) and books the two-phase model of
-  [ADR-0010](0010-ledger-two-phase-booking.md).
+- Realizes DvP from [ADR-0003](../system/0003-physical-forex-t2-uniform.md) and books the two-phase model of
+  [ADR-0010](../ledger/0010-ledger-two-phase-booking.md).
 - The entry satisfies the invariant of
-  [ADR-0011](0011-double-entry-invariant-at-construction.md).
-- Settled at T+2 by [ADR-0019](0019-settlement-batch-failure-isolation.md).
+  [ADR-0011](../ledger/0011-double-entry-invariant-at-construction.md).
+- Settled at T+2 by [ADR-0019](../settlement/0019-settlement-batch-failure-isolation.md).

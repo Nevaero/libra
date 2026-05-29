@@ -46,8 +46,8 @@ event: the balance is the sum of every posting, so each must be counted exactly 
 corrupts the aggregate permanently. Snapshots admit last-write-wins, discard, and free idempotency,
 which is why pricing is a mutable latest-value projection updated lock-free. Deltas demand
 conservation, ordering, and exactly-once application, which is why the ledger is immutable,
-append-only, and pessimistically locked ([ADR-0010](0010-ledger-two-phase-booking.md),
-[ADR-0012](0012-balance-projection-pessimistic-locking.md)).
+append-only, and pessimistically locked ([ADR-0010](../ledger/0010-ledger-two-phase-booking.md),
+[ADR-0012](../ledger/0012-balance-projection-pessimistic-locking.md)).
 
 A COALESCE merge preserves the last traded price across quote-only ticks, so a quote update does not
 erase last-trade data for an equity.
@@ -78,5 +78,5 @@ erase last-trade data for an equity.
 ## Links
 
 - The opposite call for the ledger's conserved deltas
-  ([ADR-0012](0012-balance-projection-pessimistic-locking.md)).
-- At-least-once delivery and idempotent consumers ([ADR-0006](0006-transactional-outbox.md)).
+  ([ADR-0012](../ledger/0012-balance-projection-pessimistic-locking.md)).
+- At-least-once delivery and idempotent consumers ([ADR-0006](../system/0006-transactional-outbox.md)).

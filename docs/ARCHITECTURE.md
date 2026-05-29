@@ -7,7 +7,7 @@ decision records under [`docs/adr/`](./adr).
 
 > Libra is a simplified multi-asset broker built as a portfolio project. Its differentiator is
 > physical Forex with T+2 settlement, applied uniformly to equities (see
-> [ADR-0003](./adr/0003-physical-forex-t2-uniform.md)).
+> [ADR-0003](adr/system/0003-physical-forex-t2-uniform.md)).
 
 ---
 
@@ -19,9 +19,9 @@ seconds rather than take it on faith.
 
 | Principle | Where it lives in Libra | Recorded in |
 |---|---|---|
-| **Hexagonal (ports and adapters)** | Ports are the `*/port` service interfaces. Adapters are the inbound price clients (`pricing/client`, FIX and OANDA), the persistence layer (JPA repositories plus MapStruct mappers), and the planned REST/WebSocket API. The domain stays as pure records, isolated from infrastructure. | C4 Level 3 below; [ADR-0002](./adr/0002-named-interface-boundaries.md) |
-| **Domain-Driven Design** | Bounded contexts are the modules. Aggregates: `JournalEntry`/`Account`, `Order`, `Customer`, `SettlementInstruction`. Value objects: `Money`, `Asset`, `CurrencyPair`. Domain events flow through the outbox. An anti-corruption layer keeps domain records separate from JPA POJOs. | [ADR-0006](./adr/0006-transactional-outbox.md), [ADR-0007](./adr/0007-anti-corruption-layer.md) |
-| **SOLID** | SRP: ledger services are split per aggregate. OCP: the validation rule chain and sealed hierarchies extend without edits. LSP: exhaustive `switch` over the sealed `Asset`/`Instrument` types. ISP: narrow port interfaces. DIP: the resolution SPI is declared in `core` and implemented in `reference`. | [ADR-0008](./adr/0008-reference-resolution-spi.md), [ADR-0017](./adr/0017-validation-chain-of-responsibility.md) |
+| **Hexagonal (ports and adapters)** | Ports are the `*/port` service interfaces. Adapters are the inbound price clients (`pricing/client`, FIX and OANDA), the persistence layer (JPA repositories plus MapStruct mappers), and the planned REST/WebSocket API. The domain stays as pure records, isolated from infrastructure. | C4 Level 3 below; [ADR-0002](adr/system/0002-named-interface-boundaries.md) |
+| **Domain-Driven Design** | Bounded contexts are the modules. Aggregates: `JournalEntry`/`Account`, `Order`, `Customer`, `SettlementInstruction`. Value objects: `Money`, `Asset`, `CurrencyPair`. Domain events flow through the outbox. An anti-corruption layer keeps domain records separate from JPA POJOs. | [ADR-0006](adr/system/0006-transactional-outbox.md), [ADR-0007](adr/system/0007-anti-corruption-layer.md) |
+| **SOLID** | SRP: ledger services are split per aggregate. OCP: the validation rule chain and sealed hierarchies extend without edits. LSP: exhaustive `switch` over the sealed `Asset`/`Instrument` types. ISP: narrow port interfaces. DIP: the resolution SPI is declared in `core` and implemented in `reference`. | [ADR-0008](adr/system/0008-reference-resolution-spi.md), [ADR-0017](adr/validation/0017-validation-chain-of-responsibility.md) |
 
 ---
 
@@ -58,7 +58,7 @@ and Libra never calls them back.
 ## Level 2: Containers
 
 The deployable and runtime pieces. Libra runs as a modular monolith, one application process rather
-than a fleet of services (see [ADR-0001](./adr/0001-modular-monolith.md)).
+than a fleet of services (see [ADR-0001](adr/system/0001-modular-monolith.md)).
 
 ```mermaid
 C4Container
@@ -89,7 +89,7 @@ C4Container
 
 > The REST/WebSocket API is not built yet (the `api` module is planned). Every other container
 > exists. Events reach Kafka through the transactional outbox (Spring Modulith); a module never
-> calls a Kafka producer directly (see [ADR-0006](./adr/0006-transactional-outbox.md)).
+> calls a Kafka producer directly (see [ADR-0006](adr/system/0006-transactional-outbox.md)).
 
 ---
 
@@ -138,7 +138,7 @@ To keep the graph readable, the universally-shared edges are left out: `core` an
 `OPEN` modules that any other module may use. The arrow from `reference` to `core` is dashed
 because it is a dependency inversion. `reference` implements the resolution SPI that `core`
 declares, so the compile-time arrow points up the layering on purpose
-(see [ADR-0008](./adr/0008-reference-resolution-spi.md)).
+(see [ADR-0008](adr/system/0008-reference-resolution-spi.md)).
 
 ### Declared module dependencies
 
@@ -146,7 +146,7 @@ Boundaries are enforced at build time by `ModularityTests` (`ApplicationModules.
 closed module publishes fine-grained named interfaces per role: `port` (the service interfaces),
 `domain` (aggregates, value objects, enums), and `commands` where relevant. A consumer declares
 only the interfaces it actually uses, for example `ledger :: port` plus `ledger :: domain` but not
-`ledger :: commands` (see [ADR-0002](./adr/0002-named-interface-boundaries.md)).
+`ledger :: commands` (see [ADR-0002](adr/system/0002-named-interface-boundaries.md)).
 
 | Module | Type | `allowedDependencies` |
 |---|---|---|
@@ -190,7 +190,7 @@ sequenceDiagram
 
 Everything above runs synchronously. Three things stay asynchronous: the event fan-out (outbox to
 Kafka), the time-triggered T+2 settlement batch, and the inbound price stream (see
-[ADR-0009](./adr/0009-sync-command-async-fanout.md)).
+[ADR-0009](adr/system/0009-sync-command-async-fanout.md)).
 
 ---
 
@@ -198,7 +198,7 @@ Kafka), the time-triggered T+2 settlement batch, and the inbound price stream (s
 
 Left undrawn on purpose. At this scale the code-level structure (records for domain and value
 objects, JPA POJOs for persistence, MapStruct between them) reads better from the source and from
-[ADR-0007](./adr/0007-anti-corruption-layer.md) than from a diagram that would rot on every commit.
+[ADR-0007](adr/system/0007-anti-corruption-layer.md) than from a diagram that would rot on every commit.
 
 ---
 

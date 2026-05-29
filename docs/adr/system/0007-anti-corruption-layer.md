@@ -76,6 +76,6 @@ mental load of a hand-written mapper and keeps the translation fast.
 - Domain records live in `*/domain`; entities in `*/persistence/entity`; mappers in
   `*/persistence/mapper`.
 - Enables constructor-time invariants such as the double-entry check
-  ([ADR-0011](0011-double-entry-invariant-at-construction.md)).
+  ([ADR-0011](../ledger/0011-double-entry-invariant-at-construction.md)).
 - The batch resolution `@Context` threads through these mappers
   ([ADR-0008](0008-reference-resolution-spi.md)).

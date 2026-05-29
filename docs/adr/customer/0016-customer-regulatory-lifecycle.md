@@ -38,7 +38,7 @@ explicit machine keeps the rules in one place, the single source of truth. Becau
 goes through the port and is checked against the declared graph, the set of reachable states is
 closed: an illegal state such as active-without-KYC or a reopened closed account is unreachable, so
 no path leads there. This is the make-illegal-states-unrepresentable principle of
-[ADR-0011](0011-double-entry-invariant-at-construction.md) applied to the lifecycle rather than to a
+[ADR-0011](../ledger/0011-double-entry-invariant-at-construction.md) applied to the lifecycle rather than to a
 single object's invariant, which turns compliance from a convention people must remember into
 something structural.
 
@@ -74,6 +74,6 @@ workflow engine would be heavyweight external machinery for four states.
 ## Links
 
 - The same principle as the ledger invariant
-  ([ADR-0011](0011-double-entry-invariant-at-construction.md)), applied to a lifecycle.
-- Mirrors the instrument lifecycle ([ADR-0013](0013-security-master-extraction.md)).
-- Lifecycle events flow through the outbox ([ADR-0006](0006-transactional-outbox.md)).
+  ([ADR-0011](../ledger/0011-double-entry-invariant-at-construction.md)), applied to a lifecycle.
+- Mirrors the instrument lifecycle ([ADR-0013](../core/0013-security-master-extraction.md)).
+- Lifecycle events flow through the outbox ([ADR-0006](../system/0006-transactional-outbox.md)).

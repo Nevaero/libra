@@ -77,6 +77,6 @@ signed `BIGINT` is exactly what we want. Amounts persist as two columns (`amount
 ## Links
 
 - `Money` lives in `core.entities`; persistence is `MoneyEntity` plus `MoneyMapper` (two columns).
-- Quote precision uses `priceScale` (see [ADR-0014](0014-pricing-optimistic-upsert.md) and the
+- Quote precision uses `priceScale` (see [ADR-0014](../pricing/0014-pricing-optimistic-upsert.md) and the
   pricing model).
-- Supports the ledger's double-entry invariant ([ADR-0011](0011-double-entry-invariant-at-construction.md)).
+- Supports the ledger's double-entry invariant ([ADR-0011](../ledger/0011-double-entry-invariant-at-construction.md)).

@@ -16,7 +16,7 @@ implementation two problems surfaced, so the approach was revised.
   unscheduled.
 - Pass the `bookingEntryId`, which settlement needs in order to settle later.
 - Keep the module dependency graph acyclic.
-- Keep the command path consistent ([ADR-0009](0009-sync-command-async-fanout.md)).
+- Keep the command path consistent ([ADR-0009](../system/0009-sync-command-async-fanout.md)).
 
 ## Considered options
 
@@ -32,7 +32,7 @@ Trading, having just created the booking entry, calls
 
 - Atomicity: the instruction is created in the same transaction as the booking, so there is no
   window where a trade is executed and booked but not scheduled. This is the consistency-boundary
-  rule of [ADR-0009](0009-sync-command-async-fanout.md), scheduling shares a boundary with booking,
+  rule of [ADR-0009](../system/0009-sync-command-async-fanout.md), scheduling shares a boundary with booking,
   so it is synchronous.
 - Data: trading has just created the booking entry, so the `bookingEntryId` is in hand. The
   `TradeExecuted` event carries the `Trade` without the `bookingEntryId` settlement needs, so the
@@ -72,6 +72,6 @@ decision supersedes the event-driven design described in the settlement handoff.
 
 ## Links
 
-- Applies the synchronous command-path rule ([ADR-0009](0009-sync-command-async-fanout.md)).
+- Applies the synchronous command-path rule ([ADR-0009](../system/0009-sync-command-async-fanout.md)).
 - The asynchronous T+2 batch ([ADR-0019](0019-settlement-batch-failure-isolation.md)).
-- Settles the two-phase booking ([ADR-0010](0010-ledger-two-phase-booking.md)).
+- Settles the two-phase booking ([ADR-0010](../ledger/0010-ledger-two-phase-booking.md)).

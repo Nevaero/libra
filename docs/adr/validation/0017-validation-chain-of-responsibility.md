@@ -83,6 +83,6 @@ trivial since the checks are cheap reads.
 ## Links
 
 - The `ValidationContext` is built once from customer, ledger, and pricing state.
-- `ValidationFailed` flows through the outbox for audit ([ADR-0006](0006-transactional-outbox.md)).
+- `ValidationFailed` flows through the outbox for audit ([ADR-0006](../system/0006-transactional-outbox.md)).
 - Shares the Open-Closed spirit of the per-source adapters
-  ([ADR-0015](0015-price-adapter-per-source.md)).
+  ([ADR-0015](../pricing/0015-price-adapter-per-source.md)).

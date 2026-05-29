@@ -46,7 +46,7 @@ The contrast with pricing is deliberate. A price instrument receives a tick ever
 milliseconds, and a stale tick can simply be discarded because the next one supersedes it.
 Pessimistic locking on that firehose would queue every writer behind the lock (head-of-line
 blocking, latency collapse), so pricing uses a lock-free conditional upsert keyed on a monotonic
-sequence that drops stale writes ([ADR-0014](0014-pricing-optimistic-upsert.md)). Same system, two
+sequence that drops stale writes ([ADR-0014](../pricing/0014-pricing-optimistic-upsert.md)). Same system, two
 strategies, each matched to its workload: high throughput with a discardable conflict points to
 optimistic, low throughput with a must-apply conflict points to pessimistic.
 
@@ -77,7 +77,7 @@ optimistic, low throughput with a must-apply conflict points to pessimistic.
 ## Links
 
 - Pricing makes the opposite call for its workload
-  ([ADR-0014](0014-pricing-optimistic-upsert.md)).
+  ([ADR-0014](../pricing/0014-pricing-optimistic-upsert.md)).
 - The balance derives available from pending ([ADR-0010](0010-ledger-two-phase-booking.md)).
 - `BalanceProjector` stays internal to the ledger
-  ([ADR-0002](0002-named-interface-boundaries.md)).
+  ([ADR-0002](../system/0002-named-interface-boundaries.md)).

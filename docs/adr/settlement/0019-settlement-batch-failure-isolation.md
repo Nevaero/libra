@@ -16,7 +16,7 @@ one instruction fails while the rest are fine.
 - Each instruction's settlement (the pending-to-final transfer) must be atomic on its own.
 - The batch outcome must report partial success honestly.
 - Settlement execution is the asynchronous, time-shifted step
-  ([ADR-0009](0009-sync-command-async-fanout.md)).
+  ([ADR-0009](../system/0009-sync-command-async-fanout.md)).
 
 ## Considered options
 
@@ -68,6 +68,6 @@ the scheduled batch.
 
 - The synchronous scheduling half ([ADR-0018](0018-settlement-synchronous-orchestration.md)).
 - The asynchronous, time-shifted batch fits the sync/async rule
-  ([ADR-0009](0009-sync-command-async-fanout.md)).
+  ([ADR-0009](../system/0009-sync-command-async-fanout.md)).
 - Settles the two-phase booking from pending to final
-  ([ADR-0010](0010-ledger-two-phase-booking.md)).
+  ([ADR-0010](../ledger/0010-ledger-two-phase-booking.md)).

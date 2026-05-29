@@ -49,7 +49,7 @@ belongs to one bounded context, so it moves to `reference`. Even the shared laye
 concerns.
 
 Consumers depend on the stable types and resolve instances through the `core` resolution SPI
-([ADR-0008](0008-reference-resolution-spi.md)), so they never touch `reference`'s internals, and
+([ADR-0008](../system/0008-reference-resolution-spi.md)), so they never touch `reference`'s internals, and
 `reference` is free to change its persistence and lifecycle behind that boundary.
 
 ### Consequences
@@ -78,5 +78,5 @@ Consumers depend on the stable types and resolve instances through the `core` re
 ## Links
 
 - The resolution SPI that keeps consumers off `reference` internals
-  ([ADR-0008](0008-reference-resolution-spi.md)).
-- Module boundaries and the thin kernel ([ADR-0002](0002-named-interface-boundaries.md)).
+  ([ADR-0008](../system/0008-reference-resolution-spi.md)).
+- Module boundaries and the thin kernel ([ADR-0002](../system/0002-named-interface-boundaries.md)).

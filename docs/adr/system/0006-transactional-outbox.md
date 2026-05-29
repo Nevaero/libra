@@ -82,4 +82,4 @@ an audit trail and allows re-publishing incomplete events. Events are published 
 - Every domain event flows through `ApplicationEventPublisher`; Spring Modulith externalizes to Kafka.
 - `event_publication` is materialized in `V1__schema.sql`.
 - Idempotent consumption relates to the balance projection and to pricing's sequence-conditional
-  upsert ([ADR-0014](0014-pricing-optimistic-upsert.md)).
+  upsert ([ADR-0014](../pricing/0014-pricing-optimistic-upsert.md)).

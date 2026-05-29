@@ -35,7 +35,7 @@ postings into a type that guarantees balance, and every downstream consumer can 
 re-checking. It fails fast, before persistence and before the `JournalEntryPosted` event, so an
 invalid entry never reaches the database or the outbox.
 
-This is only possible because the domain is a record ([ADR-0007](0007-anti-corruption-layer.md)); a
+This is only possible because the domain is a record ([ADR-0007](../system/0007-anti-corruption-layer.md)); a
 JPA entity with a forced no-arg constructor could not guarantee balance at construction. By
 contrast, a service-layer check lives outside the object and is bypassable by a direct
 construct-and-save, and a database constraint expresses "balanced per asset across N rows" awkwardly,
@@ -72,6 +72,6 @@ of examples.
 
 ## Links
 
-- Enabled by domain records ([ADR-0007](0007-anti-corruption-layer.md)).
+- Enabled by domain records ([ADR-0007](../system/0007-anti-corruption-layer.md)).
 - Underpins two-phase booking and the DvP entry ([ADR-0010](0010-ledger-two-phase-booking.md),
-  [ADR-0020](0020-trading-dvp-booking.md)).
+  [ADR-0020](../trading/0020-trading-dvp-booking.md)).
