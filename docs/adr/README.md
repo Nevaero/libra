@@ -29,7 +29,7 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 | [0006](./0006-transactional-outbox.md) | Transactional outbox for all events | Accepted |
 | [0007](./0007-anti-corruption-layer.md) | Anti-corruption layer: domain records vs JPA POJOs | Accepted |
 | [0008](./0008-reference-resolution-spi.md) | Dependency inversion for reference resolution | Accepted |
-| [0009](./0009-sync-command-async-fanout.md) | Synchronous command path, asynchronous fan-out | Planned |
+| [0009](./0009-sync-command-async-fanout.md) | Synchronous command path, asynchronous fan-out | Accepted |
 
 ### Per-module
 
