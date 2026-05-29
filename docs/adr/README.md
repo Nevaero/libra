@@ -37,7 +37,7 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 |---|---|---|
 | [0010](./0010-ledger-two-phase-booking.md) | Ledger: two-phase booking (pending then final) for T+2 | Accepted |
 | [0011](./0011-double-entry-invariant-at-construction.md) | Ledger: double-entry invariant validated at construction | Accepted |
-| [0012](./0012-balance-projection-pessimistic-locking.md) | Ledger: pessimistic locking on the Balance projection | Planned |
+| [0012](./0012-balance-projection-pessimistic-locking.md) | Ledger: pessimistic locking on the Balance projection | Accepted |
 | [0013](./0013-security-master-extraction.md) | Reference: Security Master extracted from `core` | Planned |
 | [0014](./0014-pricing-optimistic-upsert.md) | Pricing: lock-free optimistic upsert on `sequence` | Planned |
 | [0015](./0015-price-adapter-per-source.md) | Pricing: one adapter per source, transport vs format | Planned |
