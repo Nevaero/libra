@@ -23,7 +23,7 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 |---|---|---|
 | [0001](./0001-modular-monolith.md) | Modular monolith over microservices | Accepted |
 | [0002](./0002-named-interface-boundaries.md) | Module boundaries via fine-grained named interfaces, verified | Accepted |
-| [0003](./0003-physical-forex-t2-uniform.md) | Physical Forex with T+2, applied uniformly to equities | Planned |
+| [0003](./0003-physical-forex-t2-uniform.md) | Physical Forex with T+2, applied uniformly to equities | Accepted |
 | [0004](./0004-money-minor-units.md) | Money as `BIGINT` minor units | Planned |
 | [0005](./0005-uuidv7-instant-utc.md) | UUIDv7 identifiers and `Instant` UTC timestamps | Planned |
 | [0006](./0006-transactional-outbox.md) | Transactional outbox for all events | Planned |
