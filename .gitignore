@@ -39,3 +39,6 @@ out/
 ### jqwik (property-based testing) ###
 # Local store of failing samples, regenerated each run — not source.
 .jqwik-database
+
+### Handoff working notes (local only, not part of the repo)
+docs/handoff/
