@@ -87,4 +87,4 @@ class.
   [ADR-0019](0019-settlement-batch-failure-isolation.md)).
 - The booking entry is the DvP two-leg entry ([ADR-0020](0020-trading-dvp-booking.md)).
 - The available-balance derivation relates to the Balance projection
-  ([ADR-0012](0012-balance-projection-pessimistic-locking.md)).
+  ([ADR-0012](../0012-balance-projection-pessimistic-locking.md)).
