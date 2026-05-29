@@ -46,4 +46,4 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 | [0018](settlement/0018-settlement-synchronous-orchestration.md) | Settlement: synchronous orchestration over event-driven | Accepted |
 | [0019](./0019-settlement-batch-failure-isolation.md) | Settlement: daily batch with per-instruction isolation | Accepted |
 | [0020](./0020-trading-dvp-booking.md) | Trading: Delivery-versus-Payment two-leg booking | Accepted |
-| [0021](./0021-trading-execution-simulator-idempotency.md) | Trading: in-memory execution simulator and idempotency | Planned |
+| [0021](./0021-trading-execution-simulator-idempotency.md) | Trading: in-memory execution simulator and idempotency | Accepted |
