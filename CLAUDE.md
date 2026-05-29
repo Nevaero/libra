@@ -68,7 +68,8 @@ io.libra
 ├── trading     ✅             # orchestrateur ordres (phase 1) : submitOrder → idempotence → validation
 │                              #   → exécution simulée → booking DvP → scheduleSettlement. → {core, util,
 │                              #   ledger, pricing, validation, settlement} (en `:: port`/`domain`/`commands` selon besoin)
-└── api                        # REST + WebSocket (non créé)
+└── api          ✅            # REST : controllers thin (1/module front) → ports facades, DTOs
+                              #   request/response, advice exceptions→HTTP, sécurité permit-all (placeholder). WS non créé.
 ```
 
 Chaque module : `package-info.java` avec `@ApplicationModule` (+ `allowedDependencies`), sous-packages `port`/`events`/`internal`. `core` est OPEN, `util` OPEN. Chaque module fermé **publie des named interfaces fines** (`@NamedInterface` au niveau package) par rôle : `port`, `domain`, `commands` ; un consommateur déclare précisément les interfaces qu'il utilise (ex. `ledger :: port` + `ledger :: domain`, jamais `ledger :: commands`). `persistence`/`repository`/`internal`/`port.impl` restent encapsulés. `reference` reste fermé (`{"core","util"}`), l'impl du SPI est injectée via l'interface core (**Dependency Inversion**). Le tout est **vérifié par `ModularityTests` (`ApplicationModules.verify()`)** : pas de cycle, dépendances déclarées respectées, accès uniquement aux types exposés.
@@ -111,9 +112,12 @@ Schéma Flyway en place (`V1__schema.sql` + `V2` last-trade + `V3` settlement as
 **Trading** (`io.libra.trading`) — **implémenté + testé (phase 1)** :
 - `TradingService.submitOrder` (port) : chemin de commande **synchrone**, une seule TX → idempotence sur `(clientId, idempotencyKey)`, `validation.validate` (portier), `ExecutionSimulator` interne (fill au quote courant : ask en BUY / bid en SELL, LIMIT marketable sinon no-fill), `TradeBooker` interne (**booking DvP à deux legs** sur comptes pending : leg base + leg quote = notional), puis `settlement.scheduleSettlement`. États terminaux `EXECUTED`/`REJECTED`/`CANCELLED` ; `SETTLED` viendra du batch (phase 2). Mono-leg, simulateur in-memory. `LedgerService.resolve{Client,Counterparty}Account` ajoutés (find-or-open idempotent) pour provisionner les 4 comptes du DvP.
 
+**API** (`io.libra.api`) — **REST implémenté (sans sécurité)** :
+- adaptateur inbound : un controller thin par module front (`Customer`, `Reference`, `Pricing`, `Ledger`, `Trading`) qui mappe des DTOs `dto/request` + `dto/response` vers/depuis le port facade. `ApiExceptionHandler` (`@RestControllerAdvice`) mappe `NoSuchElement`→404, `IllegalArgument`→400, `IllegalState`→409. `ApiSecurityConfig` = `SecurityFilterChain` permit-all + CSRF off (**placeholder**, à remplacer par une vraie auth). `TradingController` résout l'`Instrument` via reference avant `submitOrder`. Smoke test WebMvc (`@WebMvcTest`) sur les routes customer. Named interfaces ajoutées pour ce que `api` consomme (trading port/domain/commands, customer/reference commands, ledger enums account) — `ModularityTests` vert. **Settlement et Validation : pas de controller pour l'instant.**
+
 **Plus de stub** : tous les modules métier portent de la logique testée.
 
-**Ce qui reste globalement** : module `api` (REST/WebSocket) non créé ; métriques Micrometer custom ; **ADRs (`docs/adr/`) + modèle C4** (en cours) ; le transport pricing réel (mock-feed Bun, cf. `docs/PRICING_HANDOFF.md` §6.1) ; calendriers de jours fériés réels pour settlement ; trading phase 2 (multi-leg, vrai venue, transition `Order → SETTLED` sur event `TradeSettled`).
+**Ce qui reste globalement** : sécurité réelle sur l'`api` + WebSocket (streaming ordres/positions) ; métriques Micrometer custom ; le transport pricing réel (mock-feed Bun, cf. `docs/PRICING_HANDOFF.md` §6.1) ; calendriers de jours fériés réels pour settlement ; trading phase 2 (multi-leg, vrai venue, transition `Order → SETTLED` sur event `TradeSettled`).
 
 ## 6. Conventions transversales (à appliquer dans tout code écrit)
 
@@ -161,8 +165,10 @@ Pour chaque module : entités + invariants validés, schéma Flyway idempotent, 
 ```bash
 ./gradlew build           # compile + tests
 ./gradlew test            # tests uniquement
-./gradlew bootRun         # démarre l'app (nécessite Postgres + Kafka — compose.yaml encore vide)
+./gradlew bootRun         # démarre l'app (nécessite Postgres + Kafka, voir compose.yaml)
 ```
+
+Le **configuration cache** Gradle est activé dans `gradle.properties` (`org.gradle.configuration-cache=true`, `org.gradle.parallel=true`), donc les builds réutilisent la configuration après le premier run.
 
 ## 11. Reprise de session — checklist Claude
 

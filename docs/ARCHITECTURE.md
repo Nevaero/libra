@@ -70,13 +70,13 @@ C4Container
     System_Ext(oanda, "OANDA Price Provider", "OANDA v20")
 
     System_Boundary(libra, "Libra") {
-        Container(webapi, "REST / WebSocket API", "Spring WebMVC + WebSocket (planned)", "Order entry and live order/position streaming")
+        Container(webapi, "REST API", "Spring WebMVC (no security yet)", "Thin controllers over the module ports; WebSocket streaming planned")
         Container(app, "Libra Application", "Java 25 · Spring Boot 4 · Spring Modulith 2", "Modular monolith covering reference, ledger, pricing, customer, validation, settlement, trading")
         ContainerDb(pg, "PostgreSQL 18", "Relational database", "Accounts, journal entries, instruments, quotes, orders, settlement instructions, outbox (event_publication)")
         ContainerQueue(kafka, "Apache Kafka", "KRaft, single-node", "Event backbone for outbox externalization")
     }
 
-    Rel(trader, webapi, "Submits orders, streams updates", "HTTPS / WSS")
+    Rel(trader, webapi, "Submits orders and reads state", "HTTPS")
     Rel(webapi, app, "Invokes module ports")
     Rel(ops, app, "Admin and lifecycle operations")
     Rel(fix, app, "Price ticks to pricing adapters", "FIX 4.4")
@@ -87,9 +87,10 @@ C4Container
     UpdateLayoutConfig($c4ShapeInRow="2", $c4BoundaryInRow="1")
 ```
 
-> The REST/WebSocket API is not built yet (the `api` module is planned). Every other container
-> exists. Events reach Kafka through the transactional outbox (Spring Modulith); a module never
-> calls a Kafka producer directly (see [ADR-0006](adr/system/0006-transactional-outbox.md)).
+> The REST API exists as thin controllers over the module ports, with no security yet (a permit-all
+> placeholder filter chain). WebSocket streaming is still planned. Events reach Kafka through the
+> transactional outbox (Spring Modulith); a module never calls a Kafka producer directly (see
+> [ADR-0006](adr/system/0006-transactional-outbox.md)).
 
 ---
 
@@ -107,6 +108,7 @@ flowchart TD
 
     feeds["Price Providers<br/><i>FIX / OANDA (external)</i>"]:::ext
 
+    api["<b>api</b><br/>REST controllers"]:::mod
     trading["<b>trading</b><br/>order orchestrator"]:::mod
     validation["<b>validation</b><br/>pre-trade gate"]:::mod
     settlement["<b>settlement</b><br/>T+2 scheduling and batch"]:::mod
@@ -118,6 +120,12 @@ flowchart TD
     util["<b>util</b> (OPEN)<br/>UUIDv7, value objects"]:::open
 
     feeds -->|price ticks| pricing
+
+    api -->|submit, read orders| trading
+    api -->|onboard, read| customer
+    api -->|register, list| reference
+    api -->|latest quote| pricing
+    api -->|accounts, balances| ledger
 
     trading -->|validate| validation
     trading -->|getLatestQuote| pricing
@@ -159,6 +167,7 @@ only the interfaces it actually uses, for example `ledger :: port` plus `ledger 
 | `validation` | closed | `core`, `ledger :: port`, `ledger :: domain`, `pricing :: port`, `pricing :: domain`, `customer :: port`, `customer :: domain` |
 | `settlement` | closed | `core`, `util`, `ledger :: port` |
 | `trading` | closed | `core`, `util`, `ledger :: port`, `ledger :: domain`, `ledger :: commands`, `pricing :: port`, `pricing :: domain`, `validation :: port`, `validation :: domain`, `settlement :: port`, `settlement :: domain` |
+| `api` | closed | `core`, `util`, `customer :: port`, `customer :: domain`, `customer :: commands`, `reference :: port`, `reference :: commands`, `pricing :: port`, `pricing :: domain`, `ledger :: port`, `ledger :: domain`, `trading :: port`, `trading :: domain`, `trading :: commands` |
 
 ### The command path (one synchronous transaction)
 
