@@ -28,7 +28,7 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 | [0005](./0005-uuidv7-instant-utc.md) | UUIDv7 identifiers and `Instant` UTC timestamps | Accepted |
 | [0006](./0006-transactional-outbox.md) | Transactional outbox for all events | Accepted |
 | [0007](./0007-anti-corruption-layer.md) | Anti-corruption layer: domain records vs JPA POJOs | Accepted |
-| [0008](./0008-reference-resolution-spi.md) | Dependency inversion for reference resolution | Planned |
+| [0008](./0008-reference-resolution-spi.md) | Dependency inversion for reference resolution | Accepted |
 | [0009](./0009-sync-command-async-fanout.md) | Synchronous command path, asynchronous fan-out | Planned |
 
 ### Per-module
