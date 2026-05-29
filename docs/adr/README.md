@@ -42,7 +42,7 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 | [0014](pricing/0014-pricing-optimistic-upsert.md) | Pricing: lock-free optimistic upsert on `sequence` | Accepted |
 | [0015](pricing/0015-price-adapter-per-source.md) | Pricing: one adapter per source, transport vs format | Accepted |
 | [0016](./0016-customer-regulatory-lifecycle.md) | Customer: regulatory lifecycle state machine | Accepted |
-| [0017](./0017-validation-chain-of-responsibility.md) | Validation: Chain of Responsibility, collect-all | Planned |
+| [0017](./0017-validation-chain-of-responsibility.md) | Validation: Chain of Responsibility, collect-all | Accepted |
 | [0018](./0018-settlement-synchronous-orchestration.md) | Settlement: synchronous orchestration over event-driven | Planned |
 | [0019](./0019-settlement-batch-failure-isolation.md) | Settlement: daily batch with per-instruction isolation | Planned |
 | [0020](./0020-trading-dvp-booking.md) | Trading: Delivery-versus-Payment two-leg booking | Planned |
