@@ -5,6 +5,7 @@ import io.libra.api.dto.request.SubmitOrderRequest;
 import io.libra.core.entities.Instrument;
 import io.libra.reference.port.ReferenceDataService;
 import io.libra.trading.port.TradingService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+@Tag(name = "Orders", description = "Order submission and lookup")
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor

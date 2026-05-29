@@ -3,6 +3,7 @@ package io.libra.api.controller;
 import io.libra.api.dto.response.AccountResponse;
 import io.libra.api.dto.response.BalanceResponse;
 import io.libra.ledger.port.LedgerService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+@Tag(name = "Accounts", description = "Ledger accounts and balances")
 @RestController
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor

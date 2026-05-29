@@ -3,6 +3,7 @@ package io.libra.api.controller;
 import io.libra.api.dto.response.CustomerResponse;
 import io.libra.api.dto.request.OnboardCustomerRequest;
 import io.libra.customer.port.CustomerService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+@Tag(name = "Customers", description = "Onboarding and the regulatory lifecycle")
 @RestController
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor

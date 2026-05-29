@@ -3,6 +3,7 @@ package io.libra.api.controller;
 import io.libra.api.dto.response.InstrumentResponse;
 import io.libra.api.dto.request.RegisterCurrencyPairRequest;
 import io.libra.reference.port.ReferenceDataService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Tag(name = "Instruments", description = "Security Master: instruments and registration")
 @RestController
 @RequestMapping("/api/instruments")
 @RequiredArgsConstructor
