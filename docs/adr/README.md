@@ -25,7 +25,7 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 | [0002](./0002-named-interface-boundaries.md) | Module boundaries via fine-grained named interfaces, verified | Accepted |
 | [0003](./0003-physical-forex-t2-uniform.md) | Physical Forex with T+2, applied uniformly to equities | Accepted |
 | [0004](./0004-money-minor-units.md) | Money as `BIGINT` minor units | Accepted |
-| [0005](./0005-uuidv7-instant-utc.md) | UUIDv7 identifiers and `Instant` UTC timestamps | Planned |
+| [0005](./0005-uuidv7-instant-utc.md) | UUIDv7 identifiers and `Instant` UTC timestamps | Accepted |
 | [0006](./0006-transactional-outbox.md) | Transactional outbox for all events | Planned |
 | [0007](./0007-anti-corruption-layer.md) | Anti-corruption layer: domain records vs JPA POJOs | Planned |
 | [0008](./0008-reference-resolution-spi.md) | Dependency inversion for reference resolution | Planned |
