@@ -17,33 +17,65 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 
 ## Index
 
-### Cross-cutting (system level)
+Records are grouped by the domain they belong to, mirroring the subfolders. All are Accepted.
 
-| ADR | Title | Status |
-|---|---|---|
-| [0001](system/0001-modular-monolith.md) | Modular monolith over microservices | Accepted |
-| [0002](system/0002-named-interface-boundaries.md) | Module boundaries via fine-grained named interfaces, verified | Accepted |
-| [0003](system/0003-physical-forex-t2-uniform.md) | Physical Forex with T+2, applied uniformly to equities | Accepted |
-| [0004](system/0004-money-minor-units.md) | Money as `BIGINT` minor units | Accepted |
-| [0005](system/0005-uuidv7-instant-utc.md) | UUIDv7 identifiers and `Instant` UTC timestamps | Accepted |
-| [0006](system/0006-transactional-outbox.md) | Transactional outbox for all events | Accepted |
-| [0007](system/0007-anti-corruption-layer.md) | Anti-corruption layer: domain records vs JPA POJOs | Accepted |
-| [0008](system/0008-reference-resolution-spi.md) | Dependency inversion for reference resolution | Accepted |
-| [0009](system/0009-sync-command-async-fanout.md) | Synchronous command path, asynchronous fan-out | Accepted |
+### `system/` (cross-cutting)
 
-### Per-module
+| ADR | Title |
+|---|---|
+| [0001](system/0001-modular-monolith.md) | Modular monolith over microservices |
+| [0002](system/0002-named-interface-boundaries.md) | Module boundaries via fine-grained named interfaces, verified |
+| [0003](system/0003-physical-forex-t2-uniform.md) | Physical Forex with T+2, applied uniformly to equities |
+| [0004](system/0004-money-minor-units.md) | Money as `BIGINT` minor units |
+| [0005](system/0005-uuidv7-instant-utc.md) | UUIDv7 identifiers and `Instant` UTC timestamps |
+| [0006](system/0006-transactional-outbox.md) | Transactional outbox for all events |
+| [0007](system/0007-anti-corruption-layer.md) | Anti-corruption layer: domain records vs JPA POJOs |
+| [0008](system/0008-reference-resolution-spi.md) | Dependency inversion for reference resolution |
+| [0009](system/0009-sync-command-async-fanout.md) | Synchronous command path, asynchronous fan-out |
 
-| ADR | Title | Status |
-|---|---|---|
-| [0010](ledger/0010-ledger-two-phase-booking.md) | Ledger: two-phase booking (pending then final) for T+2 | Accepted |
-| [0011](ledger/0011-double-entry-invariant-at-construction.md) | Ledger: double-entry invariant validated at construction | Accepted |
-| [0012](ledger/0012-balance-projection-pessimistic-locking.md) | Ledger: pessimistic locking on the Balance projection | Accepted |
-| [0013](core/0013-security-master-extraction.md) | Reference: Security Master extracted from `core` | Accepted |
-| [0014](pricing/0014-pricing-optimistic-upsert.md) | Pricing: lock-free optimistic upsert on `sequence` | Accepted |
-| [0015](pricing/0015-price-adapter-per-source.md) | Pricing: one adapter per source, transport vs format | Accepted |
-| [0016](customer/0016-customer-regulatory-lifecycle.md) | Customer: regulatory lifecycle state machine | Accepted |
-| [0017](validation/0017-validation-chain-of-responsibility.md) | Validation: Chain of Responsibility, collect-all | Accepted |
-| [0018](settlement/0018-settlement-synchronous-orchestration.md) | Settlement: synchronous orchestration over event-driven | Accepted |
-| [0019](settlement/0019-settlement-batch-failure-isolation.md) | Settlement: daily batch with per-instruction isolation | Accepted |
-| [0020](trading/0020-trading-dvp-booking.md) | Trading: Delivery-versus-Payment two-leg booking | Accepted |
-| [0021](trading/0021-trading-execution-simulator-idempotency.md) | Trading: in-memory execution simulator and idempotency | Accepted |
+### `ledger/`
+
+| ADR | Title |
+|---|---|
+| [0010](ledger/0010-ledger-two-phase-booking.md) | Two-phase booking (pending then final) for T+2 |
+| [0011](ledger/0011-double-entry-invariant-at-construction.md) | Double-entry invariant validated at construction |
+| [0012](ledger/0012-balance-projection-pessimistic-locking.md) | Pessimistic locking on the Balance projection |
+
+### `core/` (reference)
+
+| ADR | Title |
+|---|---|
+| [0013](core/0013-security-master-extraction.md) | Security Master extracted from `core` |
+
+### `pricing/`
+
+| ADR | Title |
+|---|---|
+| [0014](pricing/0014-pricing-optimistic-upsert.md) | Lock-free optimistic upsert on `sequence` |
+| [0015](pricing/0015-price-adapter-per-source.md) | One adapter per source, transport vs format |
+
+### `customer/`
+
+| ADR | Title |
+|---|---|
+| [0016](customer/0016-customer-regulatory-lifecycle.md) | Regulatory lifecycle state machine |
+
+### `validation/`
+
+| ADR | Title |
+|---|---|
+| [0017](validation/0017-validation-chain-of-responsibility.md) | Chain of Responsibility, collect-all |
+
+### `settlement/`
+
+| ADR | Title |
+|---|---|
+| [0018](settlement/0018-settlement-synchronous-orchestration.md) | Synchronous orchestration over event-driven |
+| [0019](settlement/0019-settlement-batch-failure-isolation.md) | Daily batch with per-instruction isolation |
+
+### `trading/`
+
+| ADR | Title |
+|---|---|
+| [0020](trading/0020-trading-dvp-booking.md) | Delivery-versus-Payment two-leg booking |
+| [0021](trading/0021-trading-execution-simulator-idempotency.md) | In-memory execution simulator and idempotency |
