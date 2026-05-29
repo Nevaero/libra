@@ -1,7 +1,7 @@
 package io.libra.api.controller;
 
-import io.libra.api.dto.OrderResponse;
-import io.libra.api.dto.SubmitOrderRequest;
+import io.libra.api.dto.response.OrderResponse;
+import io.libra.api.dto.request.SubmitOrderRequest;
 import io.libra.core.entities.Instrument;
 import io.libra.reference.port.ReferenceDataService;
 import io.libra.trading.port.TradingService;

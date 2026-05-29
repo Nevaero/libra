@@ -1,4 +1,4 @@
-package io.libra.api.dto;
+package io.libra.api.dto.response;
 
 import io.libra.customer.domain.Customer;
 import io.libra.customer.domain.enums.ClientCategory;

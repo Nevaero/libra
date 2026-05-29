@@ -1,7 +1,7 @@
 package io.libra.api.controller;
 
-import io.libra.api.dto.AccountResponse;
-import io.libra.api.dto.BalanceResponse;
+import io.libra.api.dto.response.AccountResponse;
+import io.libra.api.dto.response.BalanceResponse;
 import io.libra.ledger.port.LedgerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

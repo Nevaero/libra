@@ -1,6 +1,6 @@
 package io.libra.api.controller;
 
-import io.libra.api.dto.QuoteResponse;
+import io.libra.api.dto.response.QuoteResponse;
 import io.libra.pricing.domain.enums.Tenor;
 import io.libra.pricing.port.PricingService;
 import lombok.RequiredArgsConstructor;

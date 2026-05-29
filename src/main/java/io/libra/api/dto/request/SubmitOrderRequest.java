@@ -1,4 +1,4 @@
-package io.libra.api.dto;
+package io.libra.api.dto.request;
 
 import io.libra.core.entities.Instrument;
 import io.libra.core.entities.Money;

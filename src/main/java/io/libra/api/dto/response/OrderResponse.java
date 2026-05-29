@@ -1,4 +1,4 @@
-package io.libra.api.dto;
+package io.libra.api.dto.response;
 
 import io.libra.core.entities.enums.Side;
 import io.libra.core.persistence.resolution.InstrumentRefs;

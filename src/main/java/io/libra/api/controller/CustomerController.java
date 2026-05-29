@@ -1,7 +1,7 @@
 package io.libra.api.controller;
 
-import io.libra.api.dto.CustomerResponse;
-import io.libra.api.dto.OnboardCustomerRequest;
+import io.libra.api.dto.response.CustomerResponse;
+import io.libra.api.dto.request.OnboardCustomerRequest;
 import io.libra.customer.port.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

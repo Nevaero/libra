@@ -1,7 +1,7 @@
 package io.libra.api.controller;
 
-import io.libra.api.dto.InstrumentResponse;
-import io.libra.api.dto.RegisterCurrencyPairRequest;
+import io.libra.api.dto.response.InstrumentResponse;
+import io.libra.api.dto.request.RegisterCurrencyPairRequest;
 import io.libra.reference.port.ReferenceDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
