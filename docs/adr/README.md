@@ -38,10 +38,10 @@ decision: the context, the options weighed, the choice, and its consequences. Th
 | [0010](ledger/0010-ledger-two-phase-booking.md) | Ledger: two-phase booking (pending then final) for T+2 | Accepted |
 | [0011](ledger/0011-double-entry-invariant-at-construction.md) | Ledger: double-entry invariant validated at construction | Accepted |
 | [0012](ledger/0012-balance-projection-pessimistic-locking.md) | Ledger: pessimistic locking on the Balance projection | Accepted |
-| [0013](./0013-security-master-extraction.md) | Reference: Security Master extracted from `core` | Accepted |
-| [0014](./0014-pricing-optimistic-upsert.md) | Pricing: lock-free optimistic upsert on `sequence` | Accepted |
-| [0015](./0015-price-adapter-per-source.md) | Pricing: one adapter per source, transport vs format | Accepted |
-| [0016](./0016-customer-regulatory-lifecycle.md) | Customer: regulatory lifecycle state machine | Planned |
+| [0013](core/0013-security-master-extraction.md) | Reference: Security Master extracted from `core` | Accepted |
+| [0014](pricing/0014-pricing-optimistic-upsert.md) | Pricing: lock-free optimistic upsert on `sequence` | Accepted |
+| [0015](pricing/0015-price-adapter-per-source.md) | Pricing: one adapter per source, transport vs format | Accepted |
+| [0016](./0016-customer-regulatory-lifecycle.md) | Customer: regulatory lifecycle state machine | Accepted |
 | [0017](./0017-validation-chain-of-responsibility.md) | Validation: Chain of Responsibility, collect-all | Planned |
 | [0018](./0018-settlement-synchronous-orchestration.md) | Settlement: synchronous orchestration over event-driven | Planned |
 | [0019](./0019-settlement-batch-failure-isolation.md) | Settlement: daily batch with per-instruction isolation | Planned |
